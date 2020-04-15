@@ -1,0 +1,3 @@
+
+$ cd ~/workspace/adeept_picar-b/client/
+$ python3 GUI.py
