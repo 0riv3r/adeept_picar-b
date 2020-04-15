@@ -84,7 +84,14 @@ if Blockly:
 		pass
 
 
+# 0riv3r:
+# auto-move
+# created a sleepWhenMove
+# this is the time the rover moves before stop and assess
+# changed the sleep when in move from 0.5 to 1
+# 
 def autoDect(speed):
+	sleepWhenMove = 1
 	move.motorStop()
 	servo.ahead()
 	time.sleep(0.3)
@@ -109,36 +116,36 @@ def autoDect(speed):
 		else:
 			servo.turnRight()
 		move.move(speed,'forward')
-		time.sleep(0.5)
+		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif getLeft < range_min and min(getMiddle, getRight) > range_min:
 		servo.turnRight(0.7)
 		move.move(speed,'forward')
-		time.sleep(0.5)
+		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif getRight < range_min and min(getMiddle, getLeft) > range_min:
 		servo.turnLeft(0.7)
 		move.move(speed,'forward')
-		time.sleep(0.5)
+		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getLeft, getMiddle) < range_min and getRight > range_min:
 		servo.turnRight()
 		move.move(speed,'forward')
-		time.sleep(0.5)
+		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getMiddle, getRight) < range_min and getLeft >range_min:
 		servo.turnLeft()
 		move.move(speed, 'forward')
-		time.sleep(0.5)
+		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getLeft, getMiddle, getRight) < range_min:
 		move.move(speed,'backward')
-		time.sleep(0.5)
+		time.sleep(sleepWhenMove)
 		move.motorStop()
 	else:
 		servo.turnMiddle()
 		move.move(speed,'forward')
-		time.sleep(0.5)
+		time.sleep(sleepWhenMove)
 		move.motorStop()
 
 

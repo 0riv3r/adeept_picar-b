@@ -21,13 +21,13 @@ pwm2_direction = 1
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(50)
 
-pwm0_init = 300
+pwm0_init = 281
 pwm0_range = 100
 pwm0_max  = 500
 pwm0_min  = 100
 pwm0_pos  = pwm0_init
 
-pwm1_init = 300
+pwm1_init = 271
 pwm1_range = 150
 pwm1_max  = 450
 pwm1_min  = 150

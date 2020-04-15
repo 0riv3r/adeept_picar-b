@@ -5,8 +5,11 @@ ssh connection
  password: raspberry
 
 pi:
+ sudo apt update
+ sudo apt upgrade
+ sudo apt autoremove
  sudo git clone https://github.com/0riv3r/adeept_picar-b.git
- sudo python3 adeept_picar-b/setup.py
+ sudo python3 adeept_picar-b/setup.py > setup_report.txt
 
 pc:
  git clone https://github.com/0riv3r/adeept_picar-b.git
@@ -51,7 +54,7 @@ To be able to change code on the PiCar:
 
 $ pwd
 /home/pi
-$ sudo chmod -R 777 adeept_picar-b/
+$ sudo chmod -R 775 adeept_picar-b/
 
 =============================================================================================
 
@@ -68,6 +71,8 @@ so it is:
 then you can restart the server when needed
 run the kill code on a second terminal:
 $ sudo killall python3
+
+cd /home/pi/adeept_picar-b/server
 $ pwd
 /home/pi/adeept_picar-b/server
 $ sudo python3 server.py
