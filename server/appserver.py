@@ -86,6 +86,49 @@ def app_ctrl():
 
     def appCommand(data_input):
         global direction_command, turn_command, servo_command
+
+        # 0riv3r:
+        # The following code fixes the un-synced app buttons with their respective functions
+        # ==================================================================================  
+        #
+        # The commands that arrive from the phone are not sync with the phone app buttons
+        # original:
+        # full-arrows on the right side of the app's pannel
+        # fixing the arrows by changing the arrived data
+        #   arrow drawing   |   arrived-text                    |   text-changed-to
+        #   -------------   |   ------------                        ---------------
+        #        <          |   downStart, downStop             |   lookLeftStart, lookLeftStop
+        #        >          |   upStart, upStop                 |   lookRightStart, lookRightStop
+        #        ^          |   lookLeftStart, lookLeftStop     |   upStart, upStop
+        #        v          |   lookRightStart, lookRightStop   |   downStart, downStop
+        # -----------------------------------------------------------------------------------------
+        #     letters       |   arrived-text                    |   text-changed-to
+        #     -------       |   ------------                        ---------------
+        #        A          |   aStart, aStop - begin police/end police
+        #        B          |   bStart, bStop - start changing/illuminating back lights
+        #        C          |   cStart, cStop - turn off some lights on the raspberry-pi head
+        #        D          |   dStart, dStop - turn on some lights on the raspberry-pi head
+
+        if data_input == 'lookLeftStart\n':
+            data_input = 'upStart\n'
+        elif data_input == 'lookRightStart\n':
+            data_input = 'downStart\n'
+        elif data_input == 'upStart\n':
+            data_input = 'lookLeftStart\n'
+        elif data_input == 'downStart\n':
+            data_input = 'lookRightStart\n'
+
+        elif 'lookLeftStop' in data_input:
+            data_input = 'upStop\n'
+        elif 'lookRightStop' in data_input:
+            data_input = 'downStop\n'
+        elif 'downStop' in data_input:
+            data_input = 'lookRightStop\n'
+        elif 'upStop' in data_input:
+            data_input = 'lookLeftStop\n'
+
+        # ================================================================================== 
+
         if data_input == 'forwardStart\n':
             direction_command = 'forward'
             move.move(speed_set, direction_command)
@@ -160,13 +203,18 @@ def app_ctrl():
                 LED.ledfunc = ''
                 ledthread.pause()
 
+        # 0riv3r:
+        # Button 'B' in the app
+        # Reset the Servos
+        # (instead of Police loghts)
         elif data_input == 'bStart\n':
-            if LED.ledfunc != 'rainbow':
-                LED.ledfunc = 'rainbow'
-                ledthread.resume()
-            elif LED.ledfunc == 'rainbow':
-                LED.ledfunc = ''
-                ledthread.pause()
+            servo.ahead()
+            # if LED.ledfunc != 'rainbow':
+            #     LED.ledfunc = 'rainbow'
+            #     ledthread.resume()
+            # elif LED.ledfunc == 'rainbow':
+            #     LED.ledfunc = ''
+            #     ledthread.pause()
 
         elif data_input == 'cStart\n':
             switch.switch(1,1)

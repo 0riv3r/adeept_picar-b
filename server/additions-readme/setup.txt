@@ -1,0 +1,96 @@
+ssh connection
+==============
+
+ ssh pi@192.168.xx.xxx
+ password: raspberry
+
+pi:
+ sudo git clone https://github.com/0riv3r/adeept_picar-b.git
+ sudo python3 adeept_picar-b/setup.py
+
+pc:
+ git clone https://github.com/0riv3r/adeept_picar-b.git
+ pip3 install numpy
+
+ pip3 install Matplotlib
+ pip3 install IPython
+
+ https://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv
+ Install opencv on ubuntu:
+ https://docs.opencv.org/3.4/d2/de6/tutorial_py_setup_in_ubuntu.html
+ opencv_version
+ 4.3.0-dev
+
+ pip3 install zmq pybase64
+
+ run the GUI.py:
+ cd to adeept_picar-b/client/
+ python3 GUI.py
+
+ ..Connecting to server @ 192.168.68.120:10223...
+
+=============================================================================================
+
+setup ssh pub-key on the raspberry-pi to connect with VS-Code
+-------------------------------------------------------------
+
+ssh to the raspberry-pi from the terminal
+
+$ cd ~
+$ mkdir .ssh
+$ cd .ssh
+$ touch authorized_keys
+$ nano authorized_keys
+$ paste the public key text, and save
+$ chmod 700 .ssh/
+$ chmod 600 .ssh/authorized_keys
+
+=============================================================================================
+
+To be able to change code on the PiCar:
+
+$ pwd
+/home/pi
+$ sudo chmod -R 777 adeept_picar-b/
+
+=============================================================================================
+
+To be able to work on the pthon server you have to disable it from being launched with the OS
+ 
+in /home/pi/startup.sh
+comment the line:
+sudo python3 //home/pi/adeept_picar-b/server/server.py
+
+so it is:
+# sudo python3 //home/pi/adeept_picar-b/server/server.py
+
+
+then you can restart the server when needed
+run the kill code on a second terminal:
+$ sudo killall python3
+$ pwd
+/home/pi/adeept_picar-b/server
+$ sudo python3 server.py
+
+=============================================================================================
+
+speech_recognition
+==================
+
+Install pyaudio:
+
+$ sudo apt-get install python3-pyaudio
+
+
+=============================================================================================
+
+Run
+===
+
+$ pwd
+/home/pi/adeept_picar-b/server
+$ sudo python3 server.py
+
+run the kill code on a second terminal:
+$ sudo killall python3
+
