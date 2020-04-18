@@ -13,6 +13,9 @@ import LED
 import move
 import servo
 import switch
+
+import subprocess
+
 servo.servo_init()
 switch.switchSetup()
 switch.set_all_switch_off()
@@ -84,6 +87,10 @@ def app_ctrl():
     def setup():
         move.setup()
 
+    def playCartoonSound(fileName):
+        path = '/home/pi/Audio/Cartoon/' + fileName
+        subprocess.call(['aplay -D bluealsa:DEV=2C:41:A1:89:72:03 ' + path], shell=True)
+
     def appCommand(data_input):
         global direction_command, turn_command, servo_command
 
@@ -102,10 +109,10 @@ def app_ctrl():
         #        ^          |   lookLeftStart, lookLeftStop     |   upStart, upStop
         #        v          |   lookRightStart, lookRightStop   |   downStart, downStop
         # -----------------------------------------------------------------------------------------
-        #     letters       |   arrived-text                    |   text-changed-to
+        #     letters       |   arrived-text                    |   command-changed-to
         #     -------       |   ------------                        ---------------
         #        A          |   aStart, aStop - begin police/end police
-        #        B          |   bStart, bStop - start changing/illuminating back lights
+        #        B          |   bStart, bStop - start changing/illuminating back lights        | servo.ahead()
         #        C          |   cStart, cStop - turn off some lights on the raspberry-pi head
         #        D          |   dStart, dStop - turn on some lights on the raspberry-pi head
 
@@ -114,18 +121,18 @@ def app_ctrl():
         elif data_input == 'lookRightStart\n':
             data_input = 'downStart\n'
         elif data_input == 'upStart\n':
-            data_input = 'lookLeftStart\n'
-        elif data_input == 'downStart\n':
             data_input = 'lookRightStart\n'
+        elif data_input == 'downStart\n':
+            data_input = 'lookLeftStart\n'
 
         elif 'lookLeftStop' in data_input:
             data_input = 'upStop\n'
         elif 'lookRightStop' in data_input:
             data_input = 'downStop\n'
         elif 'downStop' in data_input:
-            data_input = 'lookRightStop\n'
-        elif 'upStop' in data_input:
             data_input = 'lookLeftStop\n'
+        elif 'upStop' in data_input:
+            data_input = 'lookRightStop\n'
 
         # ================================================================================== 
 
@@ -199,6 +206,8 @@ def app_ctrl():
             if LED.ledfunc != 'police':
                 LED.ledfunc = 'police'
                 ledthread.resume()
+                for i in range(5):
+                    playCartoonSound ("runningFrog.wav")
             elif LED.ledfunc == 'police':
                 LED.ledfunc = ''
                 ledthread.pause()
@@ -209,6 +218,8 @@ def app_ctrl():
         # (instead of Police loghts)
         elif data_input == 'bStart\n':
             servo.ahead()
+            for i in range(3):
+                playCartoonSound('3bangs.wav')
             # if LED.ledfunc != 'rainbow':
             #     LED.ledfunc = 'rainbow'
             #     ledthread.resume()
@@ -217,11 +228,13 @@ def app_ctrl():
             #     ledthread.pause()
 
         elif data_input == 'cStart\n':
+
             switch.switch(1,1)
             switch.switch(2,1)
             switch.switch(3,1)
 
         elif data_input == 'dStart\n':
+
             switch.switch(1,0)
             switch.switch(2,0)
             switch.switch(3,0)

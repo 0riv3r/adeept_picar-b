@@ -45,6 +45,7 @@ if appConnection:
 		AppConntect_threading.setDaemon(True)							 #'True' means it is a front thread,it would close when the mainloop() closes
 		AppConntect_threading.start()									 #Thread starts
 	except:
+		print("Error. appserver thread failed to start!")
 		pass
 
 
@@ -139,8 +140,18 @@ def autoDect(speed):
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getLeft, getMiddle, getRight) < range_min:
+		servo.ahead()
 		move.move(speed,'backward')
 		time.sleep(sleepWhenMove)
+		move.motorStop()
+		# 0riv3r
+		# I added the random turn to avoid stuck in a corner, going fw & bw in a loop
+		if random.randint(0,1):
+			servo.turnLeft()
+		else:
+			servo.turnRight()
+		move.move(speed,'forward')
+		time.sleep(sleepWhenMove/2)
 		move.motorStop()
 	else:
 		servo.turnMiddle()
@@ -319,7 +330,7 @@ def run():
 	direction_command = 'no'
 	turn_command = 'no'
 	servo_command = 'no'
-	speed_set = 100
+	speed_set = 70 #originaly was 100
 	rad = 0.5
 
 	info_threading=threading.Thread(target=info_send_client)	#Define a thread for FPV and OpenCV
