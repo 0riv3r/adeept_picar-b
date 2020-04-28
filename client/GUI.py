@@ -24,7 +24,7 @@ except:
 
 
 def global_init():
-	global DS_stu, TS_stu, color_bg, color_text, color_btn, color_line, color_can, color_oval, target_color
+	global DS_stu, TS_stu, color_bg, color_text, color_btn, color_line, color_can, color_oval, target_color, color_btn_ex
 	global speed, ip_stu, Switch_3, Switch_2, Switch_1, servo_stu, function_stu
 	DS_stu = 0
 	TS_stu = 0
@@ -32,6 +32,7 @@ def global_init():
 	color_bg='#000000'		#Set background color
 	color_text='#E1F5FE'	  #Set text color
 	color_btn='#0277BD'	   #Set button color
+	color_btn_ex='#021abd'	#Set extension-button color
 	color_line='#01579B'	  #Set line color
 	color_can='#212121'	   #Set canvas color
 	color_oval='#2196F3'	  #Set oval color
@@ -261,6 +262,10 @@ def connection_thread():
 			function_stu = 1
 			Btn_function_6.config(bg='#4CAF50')
 
+		elif 'function_8_on' in car_info:
+			function_stu = 1
+			Btn_function_8.config(bg='#4CAF50')
+
 		elif 'CVFL_on' in car_info:
 			function_stu = 1
 			Btn_CVFL.config(bg='#4CAF50')
@@ -292,6 +297,10 @@ def connection_thread():
 		elif 'function_6_off' in car_info:
 			function_stu = 0
 			Btn_function_6.config(bg=color_btn)
+
+		elif 'function_8_off' in car_info:
+			function_stu = 0
+			Btn_function_8.config(bg=color_btn_ex)
 
 		elif 'CVrun_on' in car_info:
 			Btn_SR.config(bg='#4CAF50')
@@ -571,7 +580,7 @@ def motor_buttons(x,y):
 	Btn_2.bind('<ButtonPress-1>', call_right)
 	Btn_2.bind('<ButtonRelease-1>', call_TS)
 	root.bind('<KeyPress-d>', call_right) 
-	root.bind('<KeyRelease-d>', call_TS) 
+	root.bind('<KeyRelease-d>', call_TS)
 
 
 def information_screen(x,y):
@@ -917,7 +926,7 @@ def scale_ExpCom(x,y,w):#Z
 
 
 def function_buttons(x,y):
-	global function_stu, Btn_function_1, Btn_function_2, Btn_function_3, Btn_function_4, Btn_function_5, Btn_function_6, Btn_function_7
+	global function_stu, Btn_function_1, Btn_function_2, Btn_function_3, Btn_function_4, Btn_function_5, Btn_function_6, Btn_function_7, Btn_function_8
 	def call_function_1(event):
 		if function_stu == 0:
 			tcpClicSock.send(('function_1_on').encode())
@@ -961,6 +970,12 @@ def function_buttons(x,y):
 		# else:
 		# 	tcpClicSock.send(('function_7_off').encode())
 
+	def call_function_8(event):
+		if function_stu == 0:
+			tcpClicSock.send(('function_8_on').encode())
+		else:
+			tcpClicSock.send(('function_8_off').encode())
+
 	Btn_function_1 = tk.Button(root, width=8, text='RadarScan',fg=color_text,bg=color_btn,relief='ridge')
 	Btn_function_2 = tk.Button(root, width=8, text='FindColor',fg=color_text,bg=color_btn,relief='ridge')
 	Btn_function_3 = tk.Button(root, width=8, text='MotionGet',fg=color_text,bg=color_btn,relief='ridge')
@@ -968,6 +983,10 @@ def function_buttons(x,y):
 	Btn_function_5 = tk.Button(root, width=8, text='Automatic',fg=color_text,bg=color_btn,relief='ridge')
 	Btn_function_6 = tk.Button(root, width=8, text='SteadyCam',fg=color_text,bg=color_btn,relief='ridge')
 	Btn_function_7 = tk.Button(root, width=8, text='Instruction',fg=color_text,bg=color_btn,relief='ridge')
+
+	# 0riv3r: setup an extension button, Btn_function_8, for 'FindItem'
+	# make it with 'gark-blue' color (#021abd) since it is a function-button but will be placed with the motor-buttons
+	Btn_function_8 = tk.Button(root, width=6, text='FindItem',fg=color_text,bg=color_btn_ex,relief='ridge')
 
 	Btn_function_1.place(x=x,y=y)
 	Btn_function_2.place(x=x,y=y+35)
@@ -977,6 +996,9 @@ def function_buttons(x,y):
 	Btn_function_6.place(x=x,y=y+175)
 	Btn_function_7.place(x=x,y=y+215)
 
+	# Place this extension button where there is place in the GUI with the 'motor buttons': x=30,y=105
+	Btn_function_8.place(x=30,y=105)
+
 	Btn_function_1.bind('<ButtonPress-1>', call_function_1)
 	Btn_function_2.bind('<ButtonPress-1>', call_function_2)
 	Btn_function_3.bind('<ButtonPress-1>', call_function_3)
@@ -984,6 +1006,7 @@ def function_buttons(x,y):
 	Btn_function_5.bind('<ButtonPress-1>', call_function_5)
 	Btn_function_6.bind('<ButtonPress-1>', call_function_6)
 	Btn_function_7.bind('<ButtonPress-1>', call_function_7)
+	Btn_function_8.bind('<ButtonPress-1>', call_function_8)
 
 
 def loop():
