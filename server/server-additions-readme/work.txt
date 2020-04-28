@@ -6,3 +6,5 @@ elif functionMode == 5:
 
 l#87:
 def autoDect(speed):
+
+FPV l#335

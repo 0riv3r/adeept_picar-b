@@ -93,32 +93,24 @@ if Blockly:
 # 
 def autoDect(speed):
 
-	fpv=FPV.FPV()
-	targetToFind = "car"
 	sleepWhenMove = 1
 	move.motorStop()
 	servo.ahead()
 	time.sleep(0.3)
 	getMiddle = ultra.checkdist()
 	print('M%f'%getMiddle)
-	if(fpv.isCameraVisionFindTarget(targetToFind)):
-		print(">>>>>>>>> Found " + targetToFind + " <<<<<<<<<<<<<<")
 
 	servo.ahead()
 	servo.lookleft(100)
 	time.sleep(0.3)
 	getLeft = ultra.checkdist()
 	print('L%f'%getLeft)
-	if(fpv.isCameraVisionFindTarget(targetToFind)):
-		print(">>>>>>>>> Found " + targetToFind + " <<<<<<<<<<<<<<")
 
 	servo.ahead()
 	servo.lookright(100)
 	time.sleep(0.3)
 	getRight = ultra.checkdist()
 	print('R%f'%getRight)
-	if(fpv.isCameraVisionFindTarget(targetToFind)):
-		print(">>>>>>>>> Found " + targetToFind + " <<<<<<<<<<<<<<")
 
 	if getMiddle < range_min and min(getLeft, getRight) > range_min:
 		if random.randint(0,1):

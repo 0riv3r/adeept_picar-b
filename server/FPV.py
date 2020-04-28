@@ -311,6 +311,10 @@ class FPV:
 		motionCounter = 0
 		lastMovtionCaptured = datetime.datetime.now()
 
+		# 0riv3r:
+		count = 0
+		sleepWhenMove = 1
+		speed = 50
 
 		for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
 			frame_image = frame.array
@@ -327,13 +331,58 @@ class FPV:
 				image = vision.types.Image(content=content)
 				response = client.label_detection(image=image)
 				labels = response.label_annotations
+				# for labely in labels:
+				# 	print(labely.description)
+				target = "Vehicle"
+				if any(label.description == target for label in labels):
+					print(">>>>>>>>>>>>>>>>  " + target + " Detected!  <<<<<<<<<<<<<<<<<<<")
+					cv2.putText(frame_image,target + ' Detected',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
+					move.motorStop()
 
-				for labely in labels:
-					print(labely.description)
+					side = (count-1)%3
 
-				if any(label.description == "Wheel" for label in labels):
-					print(">>>>>>>>>>>>>>>>  YES!  <<<<<<<<<<<<<<<<<<<")
+					if side == 0:
+						servo.ahead()
+						time.sleep(0.3)
+						move.move(speed,'forward')
 
+					elif side == 1:
+						servo.ahead()
+						servo.lookleft(100)
+						time.sleep(0.3)
+						servo.turnLeft(0.7)
+						move.move(speed,'forward')
+
+					elif side == 2:
+						servo.ahead()
+						servo.lookright(100)
+						time.sleep(0.3)
+						servo.turnRight(0.7)
+						move.move(speed,'forward')
+
+					time.sleep(sleepWhenMove)
+					move.motorStop()
+
+				else:
+					cv2.putText(frame_image,target + ' Detecting',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
+					move.motorStop()
+
+					side = count%3
+					count += 1
+					if side == 0:
+						servo.ahead()
+
+					elif side == 1:
+						servo.ahead()
+						servo.lookleft(100)
+
+					elif side == 2:
+						servo.ahead()
+						servo.lookright(100)
+						
+					time.sleep(0.3)
+					move.motorStop()
+					
 
 			if FindColorMode:
 				####>>>OpenCV Start<<<####
