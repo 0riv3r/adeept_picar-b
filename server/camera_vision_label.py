@@ -37,7 +37,7 @@ def getPictureLabels():
     response = client.label_detection(image=image)
     return(response.label_annotations)
 
-def isTargetObject(target):
+def isCameraVisionFindTarget(target):
     labels = getPictureLabels()
     print(labels)
 
@@ -45,11 +45,11 @@ def isTargetObject(target):
     #     print(label.description)
 
     if any(label.description == target for label in labels):
-        print("YESSSSSSSSSSSSSSSSSS!")
+        return(True)
 
 
 if __name__ == '__main__':
-    isTargetObject("car")
+    isCameraVisionFindTarget("car")
 
 # ---------------------------
 ####  EXECUTE THIS FILE  ####
@@ -70,9 +70,19 @@ if __name__ == '__main__':
 # $ sudo pip3 install --upgrade Pillow
 # $ sudo apt-get install python-picamera
 
-# $ pip install google-cloud-vision
-# $ pip install --upgrade google-cloud-storage
+# $ sudo pip install google-cloud-vision
+# $ sudo pip install --upgrade google-cloud-storage
+# $ su
 # $ export GOOGLE_APPLICATION_CREDENTIALS="/home/pi/keys/pivision1-c7e6e5c23f0d.json"
+
+# $ sudo nano ~/.bashrc
+# # Scroll to the very bottom of the file, and add the line:
+# GOOGLE_APPLICATION_CREDENTIALS="/home/pi/keys/pivision1-c7e6e5c23f0d.json"
+# $ source ~/.bashrc
+# # Finally, confirm that the credentials are set:
+# $ echo $GOOGLE_APPLICATION_CREDENTIALS
+# # This should return the file path and name:  ‘/home/pi/keys/pivision1-c7e6e5c23f0d.json”
+
 
 ########################################################################################
 

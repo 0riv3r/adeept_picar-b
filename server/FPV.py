@@ -27,6 +27,15 @@ import switch
 import ultra
 import numpy as np
 
+#0riv3r:
+import io
+from PIL import Image
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pi/keys/pivision1-c7e6e5c23f0d.json"
+from google.cloud import vision
+client = vision.ImageAnnotatorClient()
+#--------------------------------------
+
 pid = PID.PID()
 pid.SetKp(0.5)
 pid.SetKd(0)
@@ -36,6 +45,11 @@ X_lock = 0
 tor	= 10
 FindColorMode = 0
 WatchDogMode  = 0
+
+# 0riv3r:
+# Introduce the 'FindItemMode'
+FindItemMode = 0
+
 UltraData = 3
 LED  = LED.LED()
 
@@ -201,6 +215,13 @@ class FPV:
 		if not FindColorMode:
 			servo.ahead()
 
+	# 0riv3r:
+	# Add Find-Item mode
+	def	FindItem(self, invar):
+		global FindItemMode
+		FindItemMode = invar
+		if not FindItemMode:
+			servo.ahead()
 
 	def WatchDog(self,invar):
 		global WatchDogMode
@@ -223,6 +244,47 @@ class FPV:
 
 	def defaultExpCom(self):#Z
 		camera.exposure_compensation = 0
+
+	#####################################################################
+	###  0riv3r   ####
+	##################
+
+	# def takephoto(self):
+	# 	camera = picamera.PiCamera()
+	# 	camera.capture('image.jpg')
+
+	# def getPictureLabels(self):
+	# 	self.takephoto() # First take a picture
+	# 	"""Run a label request on a single image"""
+
+	# 	with open('image.jpg', 'rb') as image_file:
+	# 		content = image_file.read()
+
+	# 	image = vision.types.Image(content=content)
+
+	# 	# response = client.logo_detection(image=image)
+	# 	response = client.label_detection(image=image)
+	# 	return(response.label_annotations)
+
+	# def isCameraVisionFindTarget(self, frame_image, target):
+	# 	#labels = self.getPictureLabels()
+	# 	with open('image.jpg', 'rb') as image_file:
+	# 		content = image_file.read()
+
+	# 	image = vision.types.Image(content=content)
+
+	# 	# response = client.logo_detection(image=image)
+	# 	response = client.label_detection(image=image)
+	# 	return(response.label_annotations)
+	# 	print(labels)
+
+	# 	# for label in labels:
+	# 	#     print(label.description)
+
+	# 	if any(label.description == target for label in labels):
+	# 		return(True)
+	#####################################################################
+
 
 
 	def capture_thread(self,IPinver):
@@ -249,9 +311,29 @@ class FPV:
 		motionCounter = 0
 		lastMovtionCaptured = datetime.datetime.now()
 
-		for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+
+		for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
 			frame_image = frame.array
 			timestamp = datetime.datetime.now()
+
+			# 0riv3r:
+			if FindItemMode:
+				img = Image.fromarray(frame_image)
+				img.save("image.jpg")
+				# encoded, buffer = cv2.imencode('.jpg', frame_image)
+				# jpg_as_text = base64.b64encode(buffer)
+				with open('image.jpg', 'rb') as image_file:
+					content = image_file.read()
+				image = vision.types.Image(content=content)
+				response = client.label_detection(image=image)
+				labels = response.label_annotations
+
+				for labely in labels:
+					print(labely.description)
+
+				if any(label.description == "Wheel" for label in labels):
+					print(">>>>>>>>>>>>>>>>  YES!  <<<<<<<<<<<<<<<<<<<")
+
 
 			if FindColorMode:
 				####>>>OpenCV Start<<<####
@@ -347,7 +429,7 @@ class FPV:
 					# if the contour is too small, ignore it
 					if cv2.contourArea(c) < 5000:
 						continue
-			 
+			
 					# compute the bounding box for the contour, draw it on the frame,
 					# and update the text
 					(x, y, w, h) = cv2.boundingRect(c)

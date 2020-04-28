@@ -92,24 +92,33 @@ if Blockly:
 # changed the sleep when in move from 0.5 to 1
 # 
 def autoDect(speed):
+
+	fpv=FPV.FPV()
+	targetToFind = "car"
 	sleepWhenMove = 1
 	move.motorStop()
 	servo.ahead()
 	time.sleep(0.3)
 	getMiddle = ultra.checkdist()
 	print('M%f'%getMiddle)
+	if(fpv.isCameraVisionFindTarget(targetToFind)):
+		print(">>>>>>>>> Found " + targetToFind + " <<<<<<<<<<<<<<")
 
 	servo.ahead()
 	servo.lookleft(100)
 	time.sleep(0.3)
 	getLeft = ultra.checkdist()
 	print('L%f'%getLeft)
+	if(fpv.isCameraVisionFindTarget(targetToFind)):
+		print(">>>>>>>>> Found " + targetToFind + " <<<<<<<<<<<<<<")
 
 	servo.ahead()
 	servo.lookright(100)
 	time.sleep(0.3)
 	getRight = ultra.checkdist()
 	print('R%f'%getRight)
+	if(fpv.isCameraVisionFindTarget(targetToFind)):
+		print(">>>>>>>>> Found " + targetToFind + " <<<<<<<<<<<<<<")
 
 	if getMiddle < range_min and min(getLeft, getRight) > range_min:
 		if random.randint(0,1):
@@ -193,6 +202,7 @@ class Servo_ctrl(threading.Thread):
 				autoDect(50)
 				if not functionMode:
 					move.motorStop()
+
 			elif functionMode == 6:
 				if MPU_connection:
 					accelerometer_data = sensor.get_accel_data()
@@ -435,6 +445,13 @@ def run():
 				servo_move.resume()
 				tcpCliSock.send(('function_6_on').encode())
 
+		# 0riv3r:
+		# an extension, to enable function 'Search'
+		elif 'function_8_on' in data:
+			functionMode = 8
+			fpv.FindItem(1)
+			tcpCliSock.send(('function_8_on').encode())
+
 
 		#elif 'function_1_off' in data:
 		#	tcpCliSock.send(('function_1_off').encode())
@@ -470,6 +487,16 @@ def run():
 			move.motorStop()
 			init_get = 0
 			tcpCliSock.send(('function_6_off').encode())
+
+		# 0riv3r:
+		# an extension, to enable function 'Search'
+		elif 'function_8_off' in data:
+			functionMode = 0
+			fpv.FindItem(0)
+			switch.switch(1,0)
+			switch.switch(2,0)
+			switch.switch(3,0)
+			tcpCliSock.send(('function_8_off').encode())
 
 
 		elif 'lookleft' == data:
