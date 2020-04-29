@@ -41,6 +41,8 @@ client = vision.ImageAnnotatorClient()
 
 ledthread = LED.LED_ctrl()
 ledthread.start()
+
+speed_set = 90
 # ------------------------------------
 
 pid = PID.PID()
@@ -61,7 +63,6 @@ UltraData = 3
 LED  = LED.LED()
 
 CVrun = 1
-speed_set = 90
 back_R = 0.4
 forward_R = 0.6
 

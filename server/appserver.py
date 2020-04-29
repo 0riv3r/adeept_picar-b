@@ -24,7 +24,6 @@ Led  = LED.LED()
 Led.colorWipe(80,255,0)
 
 step_set = 1
-speed_set = 100
 rad = 0.6
 
 direction_command = 'no'
@@ -35,6 +34,8 @@ catch_input = 1
 cir_input = 6
 
 servo_speed  = 5
+
+speed_set = 90
 
 ledthread = LED.LED_ctrl()
 ledthread.start()

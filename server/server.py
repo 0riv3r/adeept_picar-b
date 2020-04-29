@@ -322,7 +322,7 @@ def FPV_thread():
 
 def  ap_thread():
 	os.system("sudo create_ap wlan0 eth0 Groovy 12345678")
-
+	
 
 def run():
 	global servo_move, speed_set, servo_command, functionMode, init_get, R_set, G_set, B_set, SR_mode
@@ -344,6 +344,10 @@ def run():
 	servo_move.start()
 	servo_move.pause()
 	findline.setup()
+
+	# 0riv3r:
+	tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
+
 	while True: 
 		data = ''
 		data = str(tcpCliSock.recv(BUFSIZ).decode())
@@ -369,6 +373,19 @@ def run():
 		elif 'right' == data:
 			# turn_command = 'right'
 			servo.turnRight()
+
+		# 0riv3r:
+		# -------
+		elif 'fast' == data:
+			if speed_set < 100:
+				speed_set+=10
+			tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
+
+		elif 'slow' == data:
+			if speed_set > 0:
+				speed_set-=10
+			tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
+		# --------------------
 
 		elif 'TS' in data:
 			# turn_command = 'no'
