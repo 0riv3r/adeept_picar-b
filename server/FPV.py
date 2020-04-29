@@ -27,14 +27,15 @@ import switch
 import ultra
 import numpy as np
 
-#0riv3r:
+### 0riv3r:
+### -------
 import io
 from PIL import Image
 import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pi/keys/pivision1-c7e6e5c23f0d.json"
 from google.cloud import vision
 client = vision.ImageAnnotatorClient()
-#--------------------------------------
+# ------------------------------------
 
 pid = PID.PID()
 pid.SetKp(0.5)
@@ -245,47 +246,6 @@ class FPV:
 	def defaultExpCom(self):#Z
 		camera.exposure_compensation = 0
 
-	#####################################################################
-	###  0riv3r   ####
-	##################
-
-	# def takephoto(self):
-	# 	camera = picamera.PiCamera()
-	# 	camera.capture('image.jpg')
-
-	# def getPictureLabels(self):
-	# 	self.takephoto() # First take a picture
-	# 	"""Run a label request on a single image"""
-
-	# 	with open('image.jpg', 'rb') as image_file:
-	# 		content = image_file.read()
-
-	# 	image = vision.types.Image(content=content)
-
-	# 	# response = client.logo_detection(image=image)
-	# 	response = client.label_detection(image=image)
-	# 	return(response.label_annotations)
-
-	# def isCameraVisionFindTarget(self, frame_image, target):
-	# 	#labels = self.getPictureLabels()
-	# 	with open('image.jpg', 'rb') as image_file:
-	# 		content = image_file.read()
-
-	# 	image = vision.types.Image(content=content)
-
-	# 	# response = client.logo_detection(image=image)
-	# 	response = client.label_detection(image=image)
-	# 	return(response.label_annotations)
-	# 	print(labels)
-
-	# 	# for label in labels:
-	# 	#     print(label.description)
-
-	# 	if any(label.description == target for label in labels):
-	# 		return(True)
-	#####################################################################
-
-
 
 	def capture_thread(self,IPinver):
 		global frame_image, camera
@@ -314,13 +274,15 @@ class FPV:
 		# 0riv3r:
 		count = 0
 		sleepWhenMove = 1
-		speed = 50
+		speed = 80
 
 		for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
 			frame_image = frame.array
 			timestamp = datetime.datetime.now()
 
-			# 0riv3r:
+			###############################
+			###  0riv3r: FindItemMode  ####
+			###############################
 			if FindItemMode:
 				img = Image.fromarray(frame_image)
 				img.save("image.jpg")
@@ -329,6 +291,7 @@ class FPV:
 				with open('image.jpg', 'rb') as image_file:
 					content = image_file.read()
 				image = vision.types.Image(content=content)
+				# response = client.logo_detection(image=image)
 				response = client.label_detection(image=image)
 				labels = response.label_annotations
 				# for labely in labels:
@@ -337,7 +300,6 @@ class FPV:
 				if any(label.description == target for label in labels):
 					print(">>>>>>>>>>>>>>>>  " + target + " Detected!  <<<<<<<<<<<<<<<<<<<")
 					cv2.putText(frame_image,target + ' Detected',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
-					move.motorStop()
 
 					side = (count-1)%3
 
@@ -350,14 +312,14 @@ class FPV:
 						servo.ahead()
 						servo.lookleft(100)
 						time.sleep(0.3)
-						servo.turnLeft(0.7)
+						servo.turnLeft(0.5)
 						move.move(speed,'forward')
 
 					elif side == 2:
 						servo.ahead()
 						servo.lookright(100)
 						time.sleep(0.3)
-						servo.turnRight(0.7)
+						servo.turnRight(0.5)
 						move.move(speed,'forward')
 
 					time.sleep(sleepWhenMove)
@@ -380,7 +342,7 @@ class FPV:
 						servo.ahead()
 						servo.lookright(100)
 						
-					time.sleep(0.3)
+					time.sleep(sleepWhenMove)
 					move.motorStop()
 					
 
