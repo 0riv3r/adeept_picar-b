@@ -15,6 +15,7 @@ import servo
 import switch
 
 import subprocess
+import BT
 
 servo.servo_init()
 switch.switchSetup()
@@ -87,12 +88,9 @@ def app_ctrl():
     def setup():
         move.setup()
 
-    def playCartoonSound(fileName):
-        path = '/home/pi/Audio/Cartoon/' + fileName
-        subprocess.call(['aplay -D bluealsa:DEV=2C:41:A1:89:72:03 ' + path], shell=True)
-
     def appCommand(data_input):
         global direction_command, turn_command, servo_command
+        bt = BT.BT()
 
         # 0riv3r:
         # The following code fixes the un-synced app buttons with their respective functions
@@ -207,7 +205,7 @@ def app_ctrl():
                 LED.ledfunc = 'police'
                 ledthread.resume()
                 for i in range(5):
-                    playCartoonSound ("runningFrog.wav")
+                    bt.playAudio("Cartoon/runningFrog.wav")
             elif LED.ledfunc == 'police':
                 LED.ledfunc = ''
                 ledthread.pause()
@@ -219,7 +217,7 @@ def app_ctrl():
         elif data_input == 'bStart\n':
             servo.ahead()
             for i in range(3):
-                playCartoonSound('3bangs.wav')
+                bt.playAudio("Cartoon/3bangs.wav")
             # if LED.ledfunc != 'rainbow':
             #     LED.ledfunc = 'rainbow'
             #     ledthread.resume()
