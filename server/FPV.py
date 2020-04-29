@@ -32,9 +32,14 @@ import numpy as np
 import io
 from PIL import Image
 import os
+import subprocess
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pi/keys/pivision1-c7e6e5c23f0d.json"
 from google.cloud import vision
 client = vision.ImageAnnotatorClient()
+
+ledthread = LED.LED_ctrl()
+ledthread.start()
 # ------------------------------------
 
 pid = PID.PID()
@@ -216,13 +221,28 @@ class FPV:
 		if not FindColorMode:
 			servo.ahead()
 
-	# 0riv3r:
+	#### 0riv3r:
 	# Add Find-Item mode
 	def	FindItem(self, invar):
 		global FindItemMode
 		FindItemMode = invar
 		if not FindItemMode:
 			servo.ahead()
+
+	def playCartoonSound(self, fileName):
+		path = '/home/pi/Audio/Cartoon/' + fileName
+		subprocess.call(['aplay -D bluealsa:DEV=2C:41:A1:89:72:03 ' + path], shell=True)
+
+	def ItemDetectedSound(self, invar):
+		if invar:
+			LED.ledfunc = 'police'
+			ledthread.resume()
+			self.playCartoonSound ("horn.wav")
+		else:
+			LED.ledfunc = ''
+			ledthread.pause()
+
+# --------------------------------------------------
 
 	def WatchDog(self,invar):
 		global WatchDogMode
@@ -301,6 +321,7 @@ class FPV:
 					print(">>>>>>>>>>>>>>>>  " + target + " Detected!  <<<<<<<<<<<<<<<<<<<")
 					cv2.putText(frame_image,target + ' Detected',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
 
+					self.ItemDetectedSound(1)
 					side = (count-1)%3
 
 					if side == 0:
@@ -324,6 +345,7 @@ class FPV:
 
 					time.sleep(sleepWhenMove)
 					move.motorStop()
+					self.ItemDetectedSound(0)
 
 				else:
 					cv2.putText(frame_image,target + ' Detecting',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
