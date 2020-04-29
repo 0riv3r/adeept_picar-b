@@ -544,6 +544,15 @@ def motor_buttons(x,y):
 			tcpClicSock.send(('backward').encode())
 			DS_stu = 1
 
+	# 0riv3r
+	def call_fast(event):
+		tcpClicSock.send(('fast').encode())
+
+	def call_slow(event):
+		tcpClicSock.send(('slow').encode())
+	# ----------------------------------------
+
+
 	def call_DS(event):
 		global DS_stu
 		tcpClicSock.send(('DS').encode())
@@ -581,6 +590,28 @@ def motor_buttons(x,y):
 	Btn_2.bind('<ButtonRelease-1>', call_TS)
 	root.bind('<KeyPress-d>', call_right) 
 	root.bind('<KeyRelease-d>', call_TS)
+
+	# 0riv3r
+	# control speed
+	def hide_me(event):
+		event.widget.pack_forget()
+
+	Btn_8 = tk.Button(root, width=8, text='Fast',fg=color_text,bg=color_btn,relief='ridge')
+	Btn_8.bind('<Button-1>', hide_me)
+	Btn_8.bind('<ButtonPress-1>', call_fast)
+	Btn_8.bind('<ButtonRelease-1>', call_DS)
+	root.bind('<KeyPress-n>', call_fast)
+	root.bind('<KeyRelease-n>', call_DS)
+
+	Btn_9 = tk.Button(root, width=8, text='Slow',fg=color_text,bg=color_btn,relief='ridge')
+	Btn_9.bind('<Button-1>', hide_me)
+	Btn_9.bind('<ButtonPress-1>', call_slow)
+	Btn_9.bind('<ButtonRelease-1>', call_DS)
+	root.bind('<KeyPress-m>', call_slow)
+	root.bind('<KeyRelease-m>', call_DS)
+
+	Speed_labl=tk.Label(root,width=10,text='Speed:',fg=color_text,bg='#212121', anchor='w',)
+	Speed_labl.place(x=110,y=80)
 
 
 def information_screen(x,y):
