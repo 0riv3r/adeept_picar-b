@@ -207,6 +207,7 @@ def connection_thread():
 	global Switch_3, Switch_2, Switch_1, function_stu
 	while 1:
 		car_info = (tcpClicSock.recv(BUFSIZ)).decode()
+		# print('car_info: ' + str(car_info))
 		if not car_info:
 			continue
 		elif 'Switch_3_on' in car_info:
@@ -325,6 +326,9 @@ def connection_thread():
 
 		elif 'sr_off' in car_info:
 			Btn_3.config(bg=color_btn)
+
+		elif 'Speed:' in car_info:
+			Speed_labl.config(text=car_info)
 
 
 def Info_receive():
@@ -520,6 +524,8 @@ def servo_buttons(x,y):
 
 
 def motor_buttons(x,y):
+	global Speed_labl
+
 	def call_left(event):
 		global TS_stu
 		if TS_stu == 0:
