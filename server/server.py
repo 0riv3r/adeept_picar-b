@@ -24,6 +24,8 @@ from mpu6050 import mpu6050
 
 import random
 
+import App
+
 SR_dect = 0
 appConnection = 1
 Blockly = 0
@@ -85,15 +87,15 @@ if Blockly:
 		pass
 
 
-# 0riv3r:
-# auto-move
-# created a sleepWhenMove
-# this is the time the rover moves before stop and assess
-# changed the sleep when in move from 0.5 to 1
-# 
 def autoDect(speed):
 
+	# 0riv3r:
+	# auto-move
+	# created a sleepWhenMove
+	# this is the time the rover moves before stop and assess
+	# changed the sleep when in move from 0.5 to 1
 	sleepWhenMove = 1
+
 	move.motorStop()
 	servo.ahead()
 	time.sleep(0.3)
@@ -325,14 +327,14 @@ def  ap_thread():
 	
 
 def run():
-	global servo_move, speed_set, servo_command, functionMode, init_get, R_set, G_set, B_set, SR_mode
+	global servo_move, servo_command, functionMode, init_get, R_set, G_set, B_set, SR_mode
+	app = App.App()
 	servo.servo_init()
 	move.setup()
 	findline.setup()
 	direction_command = 'no'
 	turn_command = 'no'
 	servo_command = 'no'
-	speed_set = 70 #originaly was 100
 	rad = 0.5
 
 	info_threading=threading.Thread(target=info_send_client)	#Define a thread for FPV and OpenCV
@@ -346,7 +348,7 @@ def run():
 	findline.setup()
 
 	# 0riv3r:
-	tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
+	tcpCliSock.send(('Speed: ' + str(app.speedControl())).encode())
 
 	while True: 
 		data = ''
@@ -356,15 +358,15 @@ def run():
 
 		elif 'forward' == data:
 			direction_command = 'forward'
-			move.move(speed_set, direction_command)
+			move.move(app.speedControl(), direction_command)
 		
 		elif 'backward' == data:
 			direction_command = 'backward'
-			move.move(speed_set, direction_command)
+			move.move(app.speedControl(), direction_command)
 
 		elif 'DS' in data:
 			direction_command = 'no'
-			move.move(speed_set, direction_command)
+			move.move(app.speedControl(), direction_command)
 
 		elif 'left' == data:
 			# turn_command = 'left'
@@ -377,14 +379,10 @@ def run():
 		# 0riv3r:
 		# -------
 		elif 'fast' == data:
-			if speed_set < 100:
-				speed_set+=10
-			tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
+			tcpCliSock.send(('Speed: ' + str(app.speedControl('add'))).encode())
 
 		elif 'slow' == data:
-			if speed_set > 0:
-				speed_set-=10
-			tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
+			tcpCliSock.send(('Speed: ' + str(app.speedControl('reduce'))).encode())
 		# --------------------
 
 		elif 'TS' in data:
