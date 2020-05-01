@@ -80,6 +80,7 @@ def motor_B(direction, speed):#Motor 1 positive and negative rotation
 
 
 def move(speed, direction):   # 0 < radius <= 1
+	print('in move, speed: ' + str(speed))
 	if direction == 'forward':
 		motor_A(0, speed)
 		motor_B(1, speed)

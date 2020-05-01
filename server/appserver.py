@@ -15,8 +15,6 @@ import servo
 import switch
 
 import App
-import subprocess
-import BT
 
 app = App.App()
 
@@ -37,9 +35,6 @@ catch_input = 1
 cir_input = 6
 
 servo_speed  = 5
-
-ledthread = LED.LED_ctrl()
-ledthread.start()
 
 class Servo_ctrl(threading.Thread):
     def __init__(self, *args, **kwargs):
@@ -92,7 +87,6 @@ def app_ctrl():
 
     def appCommand(data_input):
         global direction_command, turn_command, servo_command
-        bt = BT.BT()
 
         # 0riv3r:
         # The following code fixes the un-synced app buttons with their respective functions
@@ -203,29 +197,10 @@ def app_ctrl():
 
 
         if data_input == 'aStart\n':
-            if LED.ledfunc != 'police':
-                LED.ledfunc = 'police'
-                ledthread.resume()
-                for i in range(5):
-                    bt.playAudio("Cartoon/runningFrog.wav")
-            elif LED.ledfunc == 'police':
-                LED.ledfunc = ''
-                ledthread.pause()
+            app.btn_A()
 
-        # 0riv3r:
-        # Button 'B' in the app
-        # Reset the Servos
-        # (instead of Police loghts)
         elif data_input == 'bStart\n':
-            servo.ahead()
-            for i in range(3):
-                bt.playAudio("Cartoon/3bangs.wav")
-            # if LED.ledfunc != 'rainbow':
-            #     LED.ledfunc = 'rainbow'
-            #     ledthread.resume()
-            # elif LED.ledfunc == 'rainbow':
-            #     LED.ledfunc = ''
-            #     ledthread.pause()
+            app.btn_B()
 
         elif data_input == 'cStart\n':
 

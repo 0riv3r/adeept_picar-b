@@ -6,17 +6,34 @@
 # BT Setup instractions can be found at the bottom
 
 import subprocess
+import threading
+from enum import Enum
 
+# ---------------------------------------------------------
 
-class BT:
+SPEAKER_MAC     = '2C:41:A1:89:72:03' # my speaker's MAC
+AUDIO_PATH      = '/home/pi/Audio/'
 
-    def __init__(self):
-        self.audioFilesDir = '/home/pi/Audio/'
+class Sounds(Enum):
+    CARTOON_BANGS           = 'cartoon-3bangs.wav'
+    CARTOON_BOING           = 'cartoon-boing.wav'
+    CARTOON_HORN            = 'cartoon-horn.wav'
+    CARTOON_POLICE          = 'cartoon-police.wav'
+    CARTOON_THROW           = 'cartoon-throw.wav'
+    CARTOON_DROPS           = 'cartoon-3drops.wav'
+    CARTOON_BUMP            = 'cartoon-bump.wav'
+    CARTOON_LITTLE_BOING    = 'cartoon-littleBoing.wav'
+    CARTOON_RUNNING_FROG    = 'cartoon-runningFrog.wav'
+    CARTOON_TRAIN           = 'cartoon-train.wav'
+    
+# ---------------------------------------------------------
 
-    def playAudio(self, filePath):
-        path = self.audioFilesDir + filePath
-        # my speaker's MAC: '2C:41:A1:89:72:03'
-        subprocess.call(['aplay -D bluealsa:DEV=2C:41:A1:89:72:03 ' + path], shell=True)
+class BT(threading.Thread):
+
+    def playSound(self, soundsEnum):
+        path = AUDIO_PATH + soundsEnum.value
+        playCmd = 'aplay -D bluealsa:DEV=' + SPEAKER_MAC + ' ' + path
+        subprocess.call([playCmd], shell=True)
 
 
 """

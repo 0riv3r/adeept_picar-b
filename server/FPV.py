@@ -27,24 +27,10 @@ import switch
 import ultra
 import numpy as np
 
-### 0riv3r:
-### -------
+# 0riv3r:
 import App
-import BT
-import io
-from PIL import Image
-import os
-import subprocess
-
 app = App.App()
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pi/keys/pivision1-c7e6e5c23f0d.json"
-from google.cloud import vision
-client = vision.ImageAnnotatorClient()
-
-ledthread = LED.LED_ctrl()
-ledthread.start()
-# ------------------------------------
 
 pid = PID.PID()
 pid.SetKp(0.5)
@@ -231,17 +217,7 @@ class FPV:
 		FindItemMode = invar
 		if not FindItemMode:
 			servo.ahead()
-
-	def ItemDetectedSound(self, invar):
-		if invar:
-			LED.ledfunc = 'police'
-			ledthread.resume()
-			bt.playAudio("Cartoon/runningFrog.wav")
-		else:
-			LED.ledfunc = ''
-			ledthread.pause()
-
-# --------------------------------------------------
+	# ------------------------
 
 	def WatchDog(self,invar):
 		global WatchDogMode
@@ -290,96 +266,16 @@ class FPV:
 		motionCounter = 0
 		lastMovtionCaptured = datetime.datetime.now()
 
-		# 0riv3r:
-		# -------
-		count = 0
-		sleepWhenMove = 1
-		speed = 80
-		wheelsTurnAngle = 0.5
-		bt = BT.BT()
-		# -------------------
-
-
 		for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
 			frame_image = frame.array
 			timestamp = datetime.datetime.now()
 
 			###  0riv3r: FindItemMode  ###
-			"""
-				Google Vision API and Raspberry Pi Camera for labaling pictures.
-				Based on the tutorial at:  https://www.dexterindustries.com/howto/use-google-cloud-vision-on-the-raspberry-pi/
-
-				Use Google Cloud Vision on the Raspberry Pi 
-				to take a picture with the Raspberry Pi Camera and classify it with the Google Cloud Vision API.   
-
-				1. The camera takes a picture of an object
-				2. upload the picture taken to Google Cloud 
-				3. GC-Vision analyze the picture and return labels as a json response
-
-				This script uses the Vision API's label detection capabilities to find a label
-				based on an image's content.
-			"""
 			if FindItemMode:
-				img = Image.fromarray(frame_image)
-				img.save("image.jpg")
-				with open('image.jpg', 'rb') as image_file:
-					content = image_file.read()
-				image = vision.types.Image(content=content)
-				# response = client.logo_detection(image=image)
-				response = client.label_detection(image=image)
-				labels = response.label_annotations
-				# for labely in labels:
-				# 	print(labely.description)
-				target = "Vehicle"
-				if any(label.description == target for label in labels):
-					print("> > >  " + target + " Detected!  < < <")
-					cv2.putText(frame_image,target + ' Detected',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
-
-					self.ItemDetectedSound(1)
-					side = (count-1)%3
-
-					if side == 0:
-						servo.ahead()
-						time.sleep(0.3)
-						move.move(speed,'forward')
-
-					elif side == 1:
-						servo.ahead()
-						servo.lookleft(100)
-						time.sleep(0.3)
-						servo.turnLeft(wheelsTurnAngle)
-						move.move(speed,'forward')
-
-					elif side == 2:
-						servo.ahead()
-						servo.lookright(100)
-						time.sleep(0.3)
-						servo.turnRight(wheelsTurnAngle)
-						move.move(speed,'forward')
-
-					time.sleep(sleepWhenMove)
-					move.motorStop()
-					self.ItemDetectedSound(0)
-
+				if(app.detectItem(frame_image) == True):
+					cv2.putText(frame_image,app.getTragetItem() + ' Detected',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
 				else:
-					cv2.putText(frame_image,target + ' Detecting',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
-					move.motorStop()
-
-					side = count%3
-					count += 1
-					if side == 0:
-						servo.ahead()
-
-					elif side == 1:
-						servo.ahead()
-						servo.lookleft(100)
-
-					elif side == 2:
-						servo.ahead()
-						servo.lookright(100)
-						
-					time.sleep(sleepWhenMove)
-					move.motorStop()
+					cv2.putText(frame_image,app.getTragetItem() + ' Detecting',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
 					
 
 			if FindColorMode:

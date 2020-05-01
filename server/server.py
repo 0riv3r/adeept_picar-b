@@ -668,23 +668,19 @@ def run():
 		elif 'police' in data:
 			if LED.ledfunc != 'police':
 				tcpCliSock.send(('rainbow_off').encode())
-				LED.ledfunc = 'police'
-				ledthread.resume()
+				app.police()
 				tcpCliSock.send(('police_on').encode())
 			elif LED.ledfunc == 'police':
-				LED.ledfunc = ''
-				ledthread.pause()
+				app.police()
 				tcpCliSock.send(('police_off').encode())
 
 		elif 'rainbow' in data:
 			if LED.ledfunc != 'rainbow':
 				tcpCliSock.send(('police_off').encode())
-				LED.ledfunc = 'rainbow'
-				ledthread.resume()
+				app.rainbow()
 				tcpCliSock.send(('rainbow_on').encode())
 			elif LED.ledfunc == 'rainbow':
-				LED.ledfunc = ''
-				ledthread.pause()
+				app.rainbow()
 				tcpCliSock.send(('rainbow_off').encode())
 
 		elif 'sr' in data:
