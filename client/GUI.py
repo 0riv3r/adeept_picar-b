@@ -263,10 +263,6 @@ def connection_thread():
 			function_stu = 1
 			Btn_function_6.config(bg='#4CAF50')
 
-		elif 'function_8_on' in car_info:
-			function_stu = 1
-			Btn_function_8.config(bg='#4CAF50')
-
 		elif 'CVFL_on' in car_info:
 			function_stu = 1
 			Btn_CVFL.config(bg='#4CAF50')
@@ -299,9 +295,9 @@ def connection_thread():
 			function_stu = 0
 			Btn_function_6.config(bg=color_btn)
 
-		elif 'function_8_off' in car_info:
+		elif 'vision_1_off' in car_info:
 			function_stu = 0
-			Btn_function_8.config(bg=color_btn_ex)
+			Btn_vision_1.config(bg=color_btn_ex)
 
 		elif 'CVrun_on' in car_info:
 			Btn_SR.config(bg='#4CAF50')
@@ -329,6 +325,10 @@ def connection_thread():
 
 		elif 'Speed:' in car_info:
 			setSpeedScale(car_info)
+
+		elif 'vision_1_on' in car_info:
+			function_stu = 1
+			Btn_vision_1.config(bg='#4CAF50')
 
 
 def Info_receive():
@@ -969,7 +969,7 @@ def scale_ExpCom(x,y,w):#Z
 
 
 def function_buttons(x,y):
-	global function_stu, Btn_function_1, Btn_function_2, Btn_function_3, Btn_function_4, Btn_function_5, Btn_function_6, Btn_function_7, Btn_function_8
+	global function_stu, Btn_function_1, Btn_function_2, Btn_function_3, Btn_function_4, Btn_function_5, Btn_function_6, Btn_function_7
 	def call_function_1(event):
 		if function_stu == 0:
 			tcpClicSock.send(('function_1_on').encode())
@@ -1013,11 +1013,6 @@ def function_buttons(x,y):
 		# else:
 		# 	tcpClicSock.send(('function_7_off').encode())
 
-	def call_function_8(event):
-		if function_stu == 0:
-			tcpClicSock.send(('function_8_on').encode())
-		else:
-			tcpClicSock.send(('function_8_off').encode())
 
 	Btn_function_1 = tk.Button(root, width=8, text='RadarScan',fg=color_text,bg=color_btn,relief='ridge')
 	Btn_function_2 = tk.Button(root, width=8, text='FindColor',fg=color_text,bg=color_btn,relief='ridge')
@@ -1027,10 +1022,6 @@ def function_buttons(x,y):
 	Btn_function_6 = tk.Button(root, width=8, text='SteadyCam',fg=color_text,bg=color_btn,relief='ridge')
 	Btn_function_7 = tk.Button(root, width=8, text='Instruction',fg=color_text,bg=color_btn,relief='ridge')
 
-	# 0riv3r: setup an extension button, Btn_function_8, for 'FindItem'
-	# make it with 'gark-blue' color (#021abd) since it is a function-button but will be placed with the motor-buttons
-	Btn_function_8 = tk.Button(root, width=6, text='FindItem',fg=color_text,bg=color_btn_ex,relief='ridge')
-
 	Btn_function_1.place(x=x,y=y)
 	Btn_function_2.place(x=x,y=y+35)
 	Btn_function_3.place(x=x,y=y+70)
@@ -1039,8 +1030,6 @@ def function_buttons(x,y):
 	Btn_function_6.place(x=x,y=y+175)
 	Btn_function_7.place(x=x,y=y+215)
 
-	# Place this extension button where there is place in the GUI with the 'motor buttons': x=30,y=105
-	Btn_function_8.place(x=30,y=105)
 
 	Btn_function_1.bind('<ButtonPress-1>', call_function_1)
 	Btn_function_2.bind('<ButtonPress-1>', call_function_2)
@@ -1049,14 +1038,33 @@ def function_buttons(x,y):
 	Btn_function_5.bind('<ButtonPress-1>', call_function_5)
 	Btn_function_6.bind('<ButtonPress-1>', call_function_6)
 	Btn_function_7.bind('<ButtonPress-1>', call_function_7)
-	Btn_function_8.bind('<ButtonPress-1>', call_function_8)
+
+
+def vision_buttons(x,y):
+	global function_stu, Btn_vision_1, Btn_vision_2, Btn_vision_3
+	def call_vision_1(event):
+		if function_stu == 0:
+			tcpClicSock.send(('vision_1_on').encode())
+		else:
+			tcpClicSock.send(('vision_1_off').encode())
+
+	# 0riv3r: setup an extension button, Btn_vision_1, for 'FindItem'
+	# make it with 'gark-blue' color (#021abd) since it is a function-button but will be placed with the motor-buttons
+	Btn_vision_1 = tk.Button(root, width=6, text='FindItem',fg=color_text,bg=color_btn_ex,relief='ridge')
+
+	# Place this extension button where there is place in the GUI with the 'motor buttons': x=30,y=105
+	Btn_vision_1.place(x=x,y=y)
+	Btn_vision_1.bind('<ButtonPress-1>', call_vision_1)
 
 
 def loop():
 	global root, var_Speed, var_R_L, var_G_L, var_B_L, var_0, var_1, var_2, var_lip1, var_lip2, var_err, var_R, var_G, var_B, var_ec
 	root = tk.Tk()			
-	root.title('PiCar-B v2.0 GUI')	  
-	root.geometry('565x850')  
+	root.title('PiCar-B v2.0 GUI')
+	# 0riv3r:
+	# original height of 850, I increased the height to accomodate my additional buttons
+	# original width of 565, I increased the width sinc it was too tight
+	root.geometry('600x910') 
 	root.config(bg=color_bg)  
 
 	var_Speed = tk.StringVar()
@@ -1100,6 +1108,12 @@ def loop():
 	except:
 		pass
 
+
+	# 0riv3r
+	vision_buttons(30,850)
+
+	# -------------------
+	
 	motor_buttons(30,105)
 
 	information_screen(330,15)
