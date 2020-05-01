@@ -26,6 +26,8 @@ import random
 
 import App
 
+app = App.App()
+
 SR_dect = 0
 appConnection = 1
 Blockly = 0
@@ -87,13 +89,15 @@ if Blockly:
 		pass
 
 
-def autoDect(speed):
+def autoDect():
 
 	# 0riv3r:
 	# auto-move
 	# created a sleepWhenMove
 	# this is the time the rover moves before stop and assess
 	# changed the sleep when in move from 0.5 to 1
+	# changed the speed control - get it from app
+	
 	sleepWhenMove = 1
 
 	move.motorStop()
@@ -119,32 +123,32 @@ def autoDect(speed):
 			servo.turnLeft()
 		else:
 			servo.turnRight()
-		move.move(speed,'forward')
+		move.move(app.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif getLeft < range_min and min(getMiddle, getRight) > range_min:
 		servo.turnRight(0.7)
-		move.move(speed,'forward')
+		move.move(app.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif getRight < range_min and min(getMiddle, getLeft) > range_min:
 		servo.turnLeft(0.7)
-		move.move(speed,'forward')
+		move.move(app.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getLeft, getMiddle) < range_min and getRight > range_min:
 		servo.turnRight()
-		move.move(speed,'forward')
+		move.move(app.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getMiddle, getRight) < range_min and getLeft >range_min:
 		servo.turnLeft()
-		move.move(speed, 'forward')
+		move.move(app.speedControl(), 'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getLeft, getMiddle, getRight) < range_min:
 		servo.ahead()
-		move.move(speed,'backward')
+		move.move(app.speedControl(),'backward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 		# 0riv3r
@@ -153,12 +157,12 @@ def autoDect(speed):
 			servo.turnLeft()
 		else:
 			servo.turnRight()
-		move.move(speed,'forward')
+		move.move(app.speedControl(),'forward')
 		time.sleep(sleepWhenMove/2)
 		move.motorStop()
 	else:
 		servo.turnMiddle()
-		move.move(speed,'forward')
+		move.move(app.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 
@@ -193,7 +197,7 @@ class Servo_ctrl(threading.Thread):
 				if not functionMode:
 					move.motorStop()
 			elif functionMode == 5:
-				autoDect(50)
+				autoDect()
 				if not functionMode:
 					move.motorStop()
 
@@ -328,7 +332,6 @@ def  ap_thread():
 
 def run():
 	global servo_move, servo_command, functionMode, init_get, R_set, G_set, B_set, SR_mode
-	app = App.App()
 	servo.servo_init()
 	move.setup()
 	findline.setup()
@@ -379,10 +382,12 @@ def run():
 		# 0riv3r:
 		# -------
 		elif 'fast' == data:
-			tcpCliSock.send(('Speed: ' + str(app.speedControl('add'))).encode())
+			speed_set = app.speedControl('add')
+			tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
 
 		elif 'slow' == data:
-			tcpCliSock.send(('Speed: ' + str(app.speedControl('reduce'))).encode())
+			speed_set = app.speedControl('reduce')
+			tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
 		# --------------------
 
 		elif 'TS' in data:
@@ -591,6 +596,7 @@ def run():
 			try:
 				set_speed=data.split()
 				speed_set = int(set_speed[1])
+				app.setSpeed(speed_set)
 			except:
 				pass
 

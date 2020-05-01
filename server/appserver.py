@@ -14,8 +14,11 @@ import move
 import servo
 import switch
 
+import App
 import subprocess
 import BT
+
+app = App.App()
 
 servo.servo_init()
 switch.switchSetup()
@@ -34,8 +37,6 @@ catch_input = 1
 cir_input = 6
 
 servo_speed  = 5
-
-speed_set = 90
 
 ledthread = LED.LED_ctrl()
 ledthread.start()
@@ -137,21 +138,21 @@ def app_ctrl():
 
         if data_input == 'forwardStart\n':
             direction_command = 'forward'
-            move.move(speed_set, direction_command)
+            move.move(app.speedControl(), direction_command)
 
         elif data_input == 'backwardStart\n':
             direction_command = 'backward'
-            move.move(speed_set, direction_command)
+            move.move(app.speedControl(), direction_command)
 
         elif data_input == 'leftStart\n':
             turn_command = 'left'
             servo.turnLeft()
-            move.move(speed_set, direction_command)
+            move.move(app.speedControl(), direction_command)
 
         elif data_input == 'rightStart\n':
             turn_command = 'right'
             servo.turnRight()
-            move.move(speed_set, direction_command)
+            move.move(app.speedControl(), direction_command)
 
         elif 'forwardStop' in data_input:
             if turn_command == 'no':

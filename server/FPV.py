@@ -29,11 +29,14 @@ import numpy as np
 
 ### 0riv3r:
 ### -------
+import App
 import BT
 import io
 from PIL import Image
 import os
 import subprocess
+
+app = App.App()
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/pi/keys/pivision1-c7e6e5c23f0d.json"
 from google.cloud import vision
@@ -41,8 +44,6 @@ client = vision.ImageAnnotatorClient()
 
 ledthread = LED.LED_ctrl()
 ledthread.start()
-
-speed_set = 90
 # ------------------------------------
 
 pid = PID.PID()
@@ -97,11 +98,11 @@ def findLineCtrl(posInput, setCenter):
 			servo.turnLeft()
 		else:
 			if CVrun:
-				move.move(speed_set, 'forward')
+				move.move(app.speedControl(), 'forward')
 			#forward
 	else:
 		if CVrun:
-			move.move(speed_set, 'backward')
+			move.move(app.speedControl(), 'backward')
 
 
 def cvFindLine():
@@ -175,9 +176,9 @@ def cvFindLine():
 def moveCtrl(distanceInput, backRange, forwardRange):
 	if CVrun:
 		if distanceInput > forwardRange:
-			move.move(speed_set, 'forward')
+			move.move(app.speedControl(), 'forward')
 		elif distanceInput < backRange:
-			move.move(speed_set, 'backward')
+			move.move(app.speedControl(), 'backward')
 		else:
 			move.motorStop()
 
