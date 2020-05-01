@@ -459,10 +459,10 @@ def run():
 
 		# 0riv3r:
 		# an extension, to enable function 'Search'
-		elif 'function_8_on' in data:
+		elif 'vision_1_on' in data:
 			functionMode = 8
 			fpv.FindItem(1)
-			tcpCliSock.send(('function_8_on').encode())
+			tcpCliSock.send(('vision_1_on').encode())
 
 
 		#elif 'function_1_off' in data:
@@ -501,14 +501,14 @@ def run():
 			tcpCliSock.send(('function_6_off').encode())
 
 		# 0riv3r:
-		# an extension, to enable function 'Search'
-		elif 'function_8_off' in data:
+		# an extension, to enable function 'FindItem'
+		elif 'vision_1_off' in data:
 			functionMode = 0
 			fpv.FindItem(0)
 			switch.switch(1,0)
 			switch.switch(2,0)
 			switch.switch(3,0)
-			tcpCliSock.send(('function_8_off').encode())
+			tcpCliSock.send(('vision_1_off').encode())
 
 
 		elif 'lookleft' == data:

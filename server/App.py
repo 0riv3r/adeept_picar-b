@@ -17,6 +17,7 @@ from PIL import Image
 import os
 import subprocess
 import time
+import ultra
 
 
 # ---------------------------------------------------------
@@ -26,6 +27,11 @@ MAX_SPEED = 100
 MIN_SPEED = 60
 SPPED_STEP = 10
 INIT_SPEED = 70
+
+# ---------------------------------------------------------
+
+# DISTANCE
+RANGE_MIN = 0.2
 
 # ---------------------------------------------------------
 
@@ -104,21 +110,21 @@ class App:
             if side == 0:
                 servo.ahead()
                 time.sleep(0.3)
-                move.move(App.speed,'forward')
+                self.moveFw()
 
             elif side == 1:
                 servo.ahead()
                 servo.lookleft(100)
                 time.sleep(0.3)
                 servo.turnLeft(wheelsTurnAngle)
-                move.move(App.speed,'forward')
+                self.moveFw()
 
             elif side == 2:
                 servo.ahead()
                 servo.lookright(100)
                 time.sleep(0.3)
                 servo.turnRight(wheelsTurnAngle)
-                move.move(App.speed,'forward')
+                self.moveFw()
 
             time.sleep(sleepWhenMove)
             move.motorStop()
@@ -156,10 +162,13 @@ class App:
             LED.ledfunc = ''
             ledthread.pause()
 
-
     def getTragetItem(self):
         return TARGET[0]
 
+    def moveFw(self):
+        if(ultra.checkdist() > RANGE_MIN):
+            print("ultra.checkdist(): " + str(ultra.checkdist()))
+            move.move(App.speed, 'forward')
 
 # **********************    Functions   **********************
 
@@ -176,7 +185,7 @@ class App:
         if LED.ledfunc != 'rainbow':
             LED.ledfunc = 'rainbow'
             ledthread.resume()
-            App.btThread.playSound(BT.Sounds.CARTOON_BANGS)
+            App.btThread.playSound(BT.Sounds.CARTOON_RUNNING_FROG)
         elif LED.ledfunc == 'rainbow':
             LED.ledfunc = ''
             ledthread.pause()
