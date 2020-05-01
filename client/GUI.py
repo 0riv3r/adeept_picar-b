@@ -328,7 +328,7 @@ def connection_thread():
 			Btn_3.config(bg=color_btn)
 
 		elif 'Speed:' in car_info:
-			Speed_labl.config(text=car_info)
+			setSpeedScale(car_info)
 
 
 def Info_receive():
@@ -524,7 +524,6 @@ def servo_buttons(x,y):
 
 
 def motor_buttons(x,y):
-	global Speed_labl
 
 	def call_left(event):
 		global TS_stu
@@ -599,6 +598,9 @@ def motor_buttons(x,y):
 
 	# 0riv3r
 	# control speed
+	# use hidden buttons that bind to key press/release
+	# key 'm' to increase speed
+	# key 'n' to reduce speed
 	def hide_me(event):
 		event.widget.pack_forget()
 
@@ -606,18 +608,15 @@ def motor_buttons(x,y):
 	Btn_8.bind('<Button-1>', hide_me)
 	Btn_8.bind('<ButtonPress-1>', call_fast)
 	Btn_8.bind('<ButtonRelease-1>', call_DS)
-	root.bind('<KeyPress-n>', call_fast)
-	root.bind('<KeyRelease-n>', call_DS)
+	root.bind('<KeyPress-m>', call_fast)
+	root.bind('<KeyRelease-m>', call_DS)
 
 	Btn_9 = tk.Button(root, width=8, text='Slow',fg=color_text,bg=color_btn,relief='ridge')
 	Btn_9.bind('<Button-1>', hide_me)
 	Btn_9.bind('<ButtonPress-1>', call_slow)
 	Btn_9.bind('<ButtonRelease-1>', call_DS)
-	root.bind('<KeyPress-m>', call_slow)
-	root.bind('<KeyRelease-m>', call_DS)
-
-	Speed_labl=tk.Label(root,width=10,text='Speed:',fg=color_text,bg='#212121', anchor='w',)
-	Speed_labl.place(x=110,y=80)
+	root.bind('<KeyPress-n>', call_slow)
+	root.bind('<KeyRelease-n>', call_DS)
 
 
 def information_screen(x,y):
@@ -689,9 +688,11 @@ def switch_button(x,y):
 
 
 def scale(x,y,w):
+	global Scale_Speed # 0riv3r: made it global access
 	def speed_send(event):
 		time.sleep(0.03)
 		tcpClicSock.send(('Speed %s'%var_Speed.get()).encode())
+		# print(('Speed %s'%var_Speed.get()).encode())
 
 	Scale_Speed = tk.Scale(root,label=None,
 	from_=60,to=100,orient=tk.HORIZONTAL,length=w,
@@ -700,6 +701,11 @@ def scale(x,y,w):
 
 	canvas_cover=tk.Canvas(root,bg=color_bg,height=30,width=510,highlightthickness=0)
 	canvas_cover.place(x=x,y=y+30)
+
+def setSpeedScale(strSpeed):
+	# separate and use the message value (message is 'Speed: 70')
+	var_Speed = int(strSpeed.split()[1])
+	Scale_Speed.set(var_Speed)
 
 
 def scale_RGB(x,y,w):
