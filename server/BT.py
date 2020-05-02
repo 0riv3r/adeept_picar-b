@@ -11,22 +11,24 @@ from enum import Enum
 
 # ---------------------------------------------------------
 
-SPEAKER_MAC     = '2C:41:A1:89:72:03' # my speaker's MAC
-AUDIO_PATH      = '/home/pi/Audio/'
+SPEAKER_MAC = '2C:41:A1:89:72:03'  # my speaker's MAC
+AUDIO_PATH = '/home/pi/Audio/'
+
 
 class Sounds(Enum):
-    CARTOON_BANGS           = 'cartoon-3bangs.wav'
-    CARTOON_BOING           = 'cartoon-boing.wav'
-    CARTOON_HORN            = 'cartoon-horn.wav'
-    CARTOON_POLICE          = 'cartoon-police.wav'
-    CARTOON_THROW           = 'cartoon-throw.wav'
-    CARTOON_DROPS           = 'cartoon-3drops.wav'
-    CARTOON_BUMP            = 'cartoon-bump.wav'
-    CARTOON_LITTLE_BOING    = 'cartoon-littleBoing.wav'
-    CARTOON_RUNNING_FROG    = 'cartoon-runningFrog.wav'
-    CARTOON_TRAIN           = 'cartoon-train.wav'
-    
+    CARTOON_BANGS = 'cartoon-3bangs.wav'
+    CARTOON_BOING = 'cartoon-boing.wav'
+    CARTOON_HORN = 'cartoon-horn.wav'
+    CARTOON_POLICE = 'cartoon-police.wav'
+    CARTOON_THROW = 'cartoon-throw.wav'
+    CARTOON_DROPS = 'cartoon-3drops.wav'
+    CARTOON_BUMP = 'cartoon-bump.wav'
+    CARTOON_LITTLE_BOING = 'cartoon-littleBoing.wav'
+    CARTOON_RUNNING_FROG = 'cartoon-runningFrog.wav'
+    CARTOON_TRAIN = 'cartoon-train.wav'
+
 # ---------------------------------------------------------
+
 
 class BT(threading.Thread):
 

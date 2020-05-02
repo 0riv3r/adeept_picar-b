@@ -5,19 +5,14 @@
 #                 A central place for saving and serving the Rover global state
 #                 A central place to manage functionality decisions
 
-import subprocess
-import threading
 import BT
 import LED
 import move
 import servo
 import Vision
-import io
-from PIL import Image
-import os
-import subprocess
 import time
 import ultra
+from enum import Enum
 
 
 # ---------------------------------------------------------
@@ -25,35 +20,42 @@ import ultra
 # SPEED
 MAX_SPEED = 100
 MIN_SPEED = 60
-SPPED_STEP = 10
+SPPED_STEP = 10  # every speed change is a jump of 10
 INIT_SPEED = 70
 
 # ---------------------------------------------------------
 
 # DISTANCE
-RANGE_MIN = 0.2
+RANGE_MIN = 0.2  # minimum distance from object
 
 # ---------------------------------------------------------
 
 # LED
+
+# A LED thread
 ledthread = LED.LED_ctrl()
 ledthread.start()
 
 # ---------------------------------------------------------
 
 # Vision
+# 0riv3r vision module that deals with GC vision
+
 vision = Vision.Vision()
 
 # Detect Items
 VEHICLE_PROPERTIES = ['Vehicle', 'Wheel']
 
-TARGET = VEHICLE_PROPERTIES
-
 sleepWhenMove = 1
 speed = 80
 wheelsTurnAngle = 0.5
 
+
+class TargetItems(Enum):
+    VEHICLE = VEHICLE_PROPERTIES
+
 # ---------------------------------------------------------
+
 
 class App:
 
@@ -63,7 +65,11 @@ class App:
     btThread.start()
 
     def __init__(self):
+
+        # A counter to be used when deciding on the camera movement direction
         self.cameraMoveCount = 0
+
+        self.targetItem = TargetItems.VEHICLE
 
     # ****************************    Speed   *****************************
 
@@ -95,31 +101,41 @@ class App:
 
     def btn_B(self):
         self.rainbow()
-            
+
     # **********************    Vision - Detect Item   **********************
 
     def detectItem(self, frame_image):
         detect = False
-        if vision.isDetectItem(frame_image, TARGET):
-            detect = True
-            print(">  " + TARGET[0] + " Detected!  <")
-            
-            self.ItemDetectedSound(1)
-            side = (self.cameraMoveCount-1)%3
 
-            if side == 0:
+        if vision.isDetectItem(frame_image, self.targetItem.value):
+
+            # *** The item is detected ***
+
+            detect = True
+            print(">  " + self.targetItem.value[0] + " Detected!  <")
+
+            self.ItemDetectedSound(1)
+
+            """
+            get the last direction of the camera, 
+            which is where the item is found
+            details on the camera direction decison in the else block below
+            """
+            direction = (self.cameraMoveCount-1) % 3
+
+            if direction == 0:
                 servo.ahead()
                 time.sleep(0.3)
                 self.moveFw()
 
-            elif side == 1:
+            elif direction == 1:
                 servo.ahead()
                 servo.lookleft(100)
                 time.sleep(0.3)
                 servo.turnLeft(wheelsTurnAngle)
                 self.moveFw()
 
-            elif side == 2:
+            elif direction == 2:
                 servo.ahead()
                 servo.lookright(100)
                 time.sleep(0.3)
@@ -130,20 +146,27 @@ class App:
             move.motorStop()
             self.ItemDetectedSound(0)
 
-        else:
-            
+        else:  # *** The item is not detected ***
+
             move.motorStop()
 
-            side = self.cameraMoveCount%3
+            """
+            Camera movement
+            cameraMoveCount counter is increased at each time it gets here
+            cameraMoveCount mod 3 - give us each time one value from the set: 0,1,2
+            each such value represents a different direction for the camera
+            """
+            direction = self.cameraMoveCount % 3
             self.cameraMoveCount += 1
-            if side == 0:
+
+            if direction == 0:
                 servo.ahead()
 
-            elif side == 1:
+            elif direction == 1:
                 servo.ahead()
                 servo.lookleft(100)
 
-            elif side == 2:
+            elif direction == 2:
                 servo.ahead()
                 servo.lookright(100)
                 
@@ -163,7 +186,7 @@ class App:
             ledthread.pause()
 
     def getTragetItem(self):
-        return TARGET[0]
+        return self.targetItem.value[0]
 
     def moveFw(self):
         if(ultra.checkdist() > RANGE_MIN):
