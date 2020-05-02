@@ -28,7 +28,7 @@ ledthread.start()
 vision = Vision.Vision()
 
 # Detect Items
-VEHICLE_PROPERTIES = ['Vehicle', 'Wheel', 'Toy vehicle']
+VEHICLE_PROPERTIES = ['Vehicle', 'Wheel', 'Toy vehicle', 'Tire', 'car']
 
 
 class TargetItems(Enum):
@@ -80,27 +80,27 @@ class App:
             detect = True
             print(">  " + self.targetItem.value[0] + " Detected!  <")
 
-            self.ItemDetectedSound(1)
+            # self.ItemDetectedSound(1)
 
             """
             get the last direction of the camera, 
             which is where the item is found
             details on the camera direction decison in the else block below
             """
-            direction = (self.cameraMoveCount-1) % 3
+            # direction = (self.cameraMoveCount-1) % 3
 
-            if direction == 0:
-                self.bodyMovements.forward(sleepBeforeDrive, sleepDistance)
+            # if direction == 0:
+            #     self.bodyMovements.forward(sleepBeforeDrive, sleepDistance)
 
-            elif direction == 1:
-                self.bodyMovements.left(sleepBeforeDrive, headAngle,
-                                        wheelsTurnAngle, sleepDistance)
+            # elif direction == 1:
+            #     self.bodyMovements.left(sleepBeforeDrive, headAngle,
+            #                             wheelsTurnAngle, sleepDistance)
 
-            elif direction == 2:
-                self.bodyMovements.right(sleepBeforeDrive, headAngle,
-                                         wheelsTurnAngle, sleepDistance)
+            # elif direction == 2:
+            #     self.bodyMovements.right(sleepBeforeDrive, headAngle,
+            #                              wheelsTurnAngle, sleepDistance)
 
-            self.ItemDetectedSound(0)
+            # self.ItemDetectedSound(0)
 
         else:  # *** The item is not detected ***
 
@@ -135,6 +135,12 @@ class App:
 
     def getTragetItem(self):
         return self.targetItem.value[0]
+
+    def getBoundingPolygonPt1(self):
+        return vision.getBoundingPolygonPt1()
+
+    def getBoundingPolygonPt2(self):
+        return vision.getBoundingPolygonPt2(self)
 
 # **********************    Functions   **********************
 

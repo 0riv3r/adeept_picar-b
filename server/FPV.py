@@ -274,6 +274,12 @@ class FPV:
 			if FindItemMode:
 				if(app.detectItem(frame_image) == True):
 					cv2.putText(frame_image,app.getTragetItem() + ' Detected',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
+					cv2.rectangle(frame_image,
+					(app.getBoundingPolygonPt1().getX + 50,
+					app.getBoundingPolygonPt1().getY + 50),
+					(app.getBoundingPolygonPt2().getX + 50,
+					app.getBoundingPolygonPt2().getY + 50),
+					(0,0,255),2)
 				else:
 					cv2.putText(frame_image,app.getTragetItem() + ' Detecting',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
 					

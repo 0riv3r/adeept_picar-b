@@ -6,8 +6,8 @@
 
 """
     Google Vision API and Raspberry Pi Camera for labaling pictures.
-    Based on the tutorial at:  
-    https://www.dexterindustries.com/howto/use-google-cloud-vision-on-the-raspberry-pi/
+    Based on the tutorial at:
+    https://cloud.google.com/vision/docs/how-to
 
     Use Google Cloud Vision on the Raspberry Pi
     to take a picture with the Raspberry Pi Camera and classify it with the
@@ -38,10 +38,25 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = \
 # ------------------------------------
 
 
+class Point:
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def getX(self):
+        return self.x
+
+    def getY(self):
+        return self.y
+
+
 class Vision:
 
     def __init__(self):
         self.client = gcVision.ImageAnnotatorClient()
+        self.pt1 = 0.0
+        self.pt2 = 0.0
 
     def isDetectItem(self, frame_image, lstTargetProperties):
         detect = False
@@ -52,12 +67,28 @@ class Vision:
         image = gcVision.types.Image(content=content)
 
         # response = self.client.logo_detection(image=image)
-        response = self.client.label_detection(image=image)
-        labels = response.label_annotations
+        # response = self.client.label_detection(image=image)
+        # labels = response.label_annotations
         # for labely in labels:
         # 	print(labely.description)
+        # if any(label.description in lstTargetProperties for label in labels):
+        #     detect = True
 
-        if any(label.description in lstTargetProperties for label in labels):
-            detect = True
+        objects = self.client.object_localization(image=image) \
+            .localized_object_annotations
+
+        for obj in objects:
+            print("Item identified: " + obj.name)
+            # if obj.name == "Wheel":
+            # if obj.name in lstTargetProperties:
+            vertices = obj.bounding_poly.normalized_vertices
+            self.pt1 = Point(vertices[0].x, vertices[0].y)
+            self.pt2 = Point(vertices[2].x, vertices[2].y)
 
         return detect
+
+    def getBoundingPolygonPt1(self):
+        return self.pt1
+
+    def getBoundingPolygonPt2(self):
+        return self.pt2

@@ -1,57 +1,26 @@
-label_annotations {
-    mid: "/m/021mh_"
-    description: "Stuffed toy"
-    score: 0.89163971
-    topicality: 0.89163971
+mid: "/m/0h9mv"
+name: "Tire"
+score: 0.6959343
+bounding_poly {
+  normalized_vertices {
+    x: 0.40517136
+    y: 0.6689809
   }
-  label_annotations {
-    mid: "/m/0138tl"
-    description: "Toy"
-    score: 0.88213009
-    topicality: 0.88213009
+  normalized_vertices {
+    x: 0.55078417
+    y: 0.6689809
   }
-  label_annotations {
-    mid: "/m/025rgl"
-    description: "Plush"
-    score: 0.86579818
-    topicality: 0.86579818
+  normalized_vertices {
+    x: 0.55078417
+    y: 0.9235
   }
-  label_annotations {
-    mid: "/m/0641k"
-    description: "Paper"
-    score: 0.78736067
-    topicality: 0.78736067
+  normalized_vertices {
+    x: 0.40517136
+    y: 0.9235
   }
-  label_annotations {
-    mid: "/m/0hcr"
-    description: "Animation"
-    score: 0.7365765
-    topicality: 0.7365765
-  }
-  label_annotations {
-    mid: "/m/0h8p59j"
-    description: "Paper product"
-    score: 0.67327869
-    topicality: 0.67327869
-  }
-  label_annotations {
-    mid: "/m/0dnr7"
-    description: "Textile"
-    score: 0.65633249
-    topicality: 0.65633249
-  }
-  label_annotations {
-    mid: "/m/02h7lkt"
-    description: "Fictional character"
-    score: 0.52791756
-    topicality: 0.52791756
-  }
-  
-  Stuffed toy
-  Toy
-  Plush
-  Paper
-  Animation
-  Paper product
-  Textile
-  Fictional character
+}
+
+ - (0.40517136454582214, 0.6689808964729309)
+ - (0.550784170627594, 0.6689808964729309)
+ - (0.550784170627594, 0.9235000014305115)
+ - (0.40517136454582214, 0.9235000014305115)

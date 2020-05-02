@@ -5,8 +5,8 @@
 
 """
 Google Vision API and Raspberry Pi Camera for labaling pictures.
-Based on the tutorial at:
-https://www.dexterindustries.com/howto/use-google-cloud-vision-on-the-raspberry-pi/
+Based on the tutorials at:
+https://cloud.google.com/vision/docs/how-to
 Use Google Cloud Vision on the Raspberry Pi
 to take a picture with the Raspberry Pi Camera and classify it with the 
 Google Cloud Vision API.
@@ -17,7 +17,7 @@ This script uses the Vision API's label detection capabilities to find a label
 based on an image's content.
 """
 
-import picamera
+import picamera 
 
 from google.cloud import vision
 client = vision.ImageAnnotatorClient()
@@ -26,6 +26,19 @@ client = vision.ImageAnnotatorClient()
 # $ PS1='\u:\W\$ '    # to reduce the length of the cli prompt
 # $ export GOOGLE_APPLICATION_CREDENTIALS="/home/pi/keys/pivision1-c7e6e5c23f0d.json"
 # $ python3 gcVision.py
+
+
+class Point:
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def getX(self):
+        return self.x
+
+    def getY(self):
+        return self.y
 
 
 def main():
@@ -53,11 +66,16 @@ def main():
     # print('Number of objects found: {}'.format(len(objects)))
     for object_ in objects:
         # print('\n{} (confidence: {})'.format(object_.name, object_.score))
-        if object_.name in ["Vehicle", "Car", "Wheel"]:
-            print(str(object_))
-            # print('Normalized bounding polygon vertices: ')
-            for vertex in object_.bounding_poly.normalized_vertices:
-                print(' - ({}, {})'.format(vertex.x, vertex.y))
+        # if object_.name in ["Vehicle", "Car", "Wheel", "Tire"]:
+        print(str(object_))
+        # print('Normalized bounding polygon vertices: ')
+        # for vertex in object_.bounding_poly.normalized_vertices:
+        #     print(' - ({}, {})'.format(vertex.x, vertex.y))
+        vertices = object_.bounding_poly.normalized_vertices
+        pt1 = Point(vertices[0].x, vertices[0].y)
+        pt2 = Point(vertices[2].x, vertices[2].y)
+        print(str(pt1.getX()) + "," + str(pt1.getY()))
+        print(str(pt2.getX()) + "," + str(pt2.getY()))
 
 
 if __name__ == '__main__':
