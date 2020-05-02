@@ -23,8 +23,9 @@ from google.cloud import vision
 client = vision.ImageAnnotatorClient()
 
 # Execute:
+# $ PS1='\u:\W\$ '    # to reduce the length of the cli prompt
 # $ export GOOGLE_APPLICATION_CREDENTIALS="/home/pi/keys/pivision1-c7e6e5c23f0d.json"
-# $ python3 vision_labels.py
+# $ python3 gcVision.py
 
 
 def main():
@@ -40,10 +41,23 @@ def main():
     image = vision.types.Image(content=content)
 
     # response = client.logo_detection(image=image)
-    response = client.label_detection(image=image)
-    labels = response.label_annotations
-    for label in labels:
-        print(label.description)
+    # response = client.label_detection(image=image)
+    # print("response: " + str(response))
+    # labels = response.label_annotations
+    # for label in labels:
+    #     print(label.description)
+
+    objects = client.object_localization(
+        image=image).localized_object_annotations
+
+    # print('Number of objects found: {}'.format(len(objects)))
+    for object_ in objects:
+        # print('\n{} (confidence: {})'.format(object_.name, object_.score))
+        if object_.name in ["Vehicle", "Car", "Wheel"]:
+            print(str(object_))
+            # print('Normalized bounding polygon vertices: ')
+            for vertex in object_.bounding_poly.normalized_vertices:
+                print(' - ({}, {})'.format(vertex.x, vertex.y))
 
 
 if __name__ == '__main__':

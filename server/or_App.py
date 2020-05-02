@@ -1,32 +1,16 @@
 #!/usr/bin/env/python
-# File name     : App.py
+# File name     : or_App.py
 # Author        : 0riv3r
 # Desc          : Application faunctionality & control
 #                 A central place for saving and serving the Rover global state
 #                 A central place to manage functionality decisions
 
-import BT
+import or_BT as BT
 import LED
-import move
-import servo
-import Vision
-import time
-import ultra
+import or_Movements
+import or_Vision as Vision
 from enum import Enum
 
-
-# ---------------------------------------------------------
-
-# SPEED
-MAX_SPEED = 100
-MIN_SPEED = 60
-SPPED_STEP = 10  # every speed change is a jump of 10
-INIT_SPEED = 70
-
-# ---------------------------------------------------------
-
-# DISTANCE
-RANGE_MIN = 0.2  # minimum distance from object
 
 # ---------------------------------------------------------
 
@@ -44,11 +28,7 @@ ledthread.start()
 vision = Vision.Vision()
 
 # Detect Items
-VEHICLE_PROPERTIES = ['Vehicle', 'Wheel']
-
-sleepWhenMove = 1
-speed = 80
-wheelsTurnAngle = 0.5
+VEHICLE_PROPERTIES = ['Vehicle', 'Wheel', 'Toy vehicle']
 
 
 class TargetItems(Enum):
@@ -59,40 +39,19 @@ class TargetItems(Enum):
 
 class App:
 
-    speed = INIT_SPEED
     # Bluetooth
     btThread = BT.BT()
     btThread.start()
 
     def __init__(self):
 
+        self.bodyMovements = or_Movements.MoveBody()
+        self.headMovements = or_Movements.MoveHead()
+
         # A counter to be used when deciding on the camera movement direction
         self.cameraMoveCount = 0
 
         self.targetItem = TargetItems.VEHICLE
-
-    # ****************************    Speed   *****************************
-
-    # input: string
-    # Change the speed value according to the given string value
-    # if gas value is not given, it will only return the current speed value
-    def speedControl(self, gas='ignore'):
-        try:
-            if (gas == 'add' and App.speed < MAX_SPEED):
-                App.speed += SPPED_STEP
-            elif (gas == 'reduce' and App.speed > MIN_SPEED):
-                App.speed -= SPPED_STEP
-            return App.speed
-        except TypeError:
-            pass
-
-    # input: int
-    # Set the speed value to the given int value
-    def setSpeed(self, iSpeed):
-        try:
-            App.speed = iSpeed
-        except TypeError:
-            pass
 
     # ***************************    Mobile App   **************************
 
@@ -105,6 +64,13 @@ class App:
     # **********************    Vision - Detect Item   **********************
 
     def detectItem(self, frame_image):
+
+        sleepBeforeDrive = 0.3
+        sleepDistance = 0.5
+        stabilizingSleep = 1
+        wheelsTurnAngle = 0.5
+        headAngle = 100
+
         detect = False
 
         if vision.isDetectItem(frame_image, self.targetItem.value):
@@ -124,31 +90,19 @@ class App:
             direction = (self.cameraMoveCount-1) % 3
 
             if direction == 0:
-                servo.ahead()
-                time.sleep(0.3)
-                self.moveFw()
+                self.bodyMovements.forward(sleepBeforeDrive, sleepDistance)
 
             elif direction == 1:
-                servo.ahead()
-                servo.lookleft(100)
-                time.sleep(0.3)
-                servo.turnLeft(wheelsTurnAngle)
-                self.moveFw()
+                self.bodyMovements.left(sleepBeforeDrive, headAngle,
+                                        wheelsTurnAngle, sleepDistance)
 
             elif direction == 2:
-                servo.ahead()
-                servo.lookright(100)
-                time.sleep(0.3)
-                servo.turnRight(wheelsTurnAngle)
-                self.moveFw()
+                self.bodyMovements.right(sleepBeforeDrive, headAngle,
+                                         wheelsTurnAngle, sleepDistance)
 
-            time.sleep(sleepWhenMove)
-            move.motorStop()
             self.ItemDetectedSound(0)
 
         else:  # *** The item is not detected ***
-
-            move.motorStop()
 
             """
             Camera movement
@@ -160,21 +114,15 @@ class App:
             self.cameraMoveCount += 1
 
             if direction == 0:
-                servo.ahead()
+                self.headMovements.ahead(stabilizingSleep)
 
             elif direction == 1:
-                servo.ahead()
-                servo.lookleft(100)
+                self.headMovements.left(stabilizingSleep, headAngle)
 
             elif direction == 2:
-                servo.ahead()
-                servo.lookright(100)
-                
-            time.sleep(sleepWhenMove)
-            move.motorStop()
+                self.headMovements.right(stabilizingSleep, headAngle)
 
         return detect
-
 
     def ItemDetectedSound(self, invar):
         if invar:
@@ -187,11 +135,6 @@ class App:
 
     def getTragetItem(self):
         return self.targetItem.value[0]
-
-    def moveFw(self):
-        if(ultra.checkdist() > RANGE_MIN):
-            print("ultra.checkdist(): " + str(ultra.checkdist()))
-            move.move(App.speed, 'forward')
 
 # **********************    Functions   **********************
 

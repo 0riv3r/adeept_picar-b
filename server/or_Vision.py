@@ -1,7 +1,7 @@
 #!/usr/bin/env/python
-# File name     : Vision.py
+# File name     : or_Vision.py
 # Author        : 0riv3r
-# Desc          : Vision functionality management
+# Desc          : Vision functionality management required by App
 #                 Use Google Cloud Vision API
 
 """

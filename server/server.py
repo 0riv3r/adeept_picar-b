@@ -24,9 +24,12 @@ from mpu6050 import mpu6050
 
 import random
 
-import App
+import or_App as App
+import or_Movements
 
 app = App.App()
+
+moveBody = or_Movements.MoveBody()
 
 SR_dect = 0
 appConnection = 1
@@ -123,32 +126,32 @@ def autoDect():
 			servo.turnLeft()
 		else:
 			servo.turnRight()
-		move.move(app.speedControl(),'forward')
+		move.move(moveBody.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif getLeft < range_min and min(getMiddle, getRight) > range_min:
 		servo.turnRight(0.7)
-		move.move(app.speedControl(),'forward')
+		move.move(moveBody.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif getRight < range_min and min(getMiddle, getLeft) > range_min:
 		servo.turnLeft(0.7)
-		move.move(app.speedControl(),'forward')
+		move.move(moveBody.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getLeft, getMiddle) < range_min and getRight > range_min:
 		servo.turnRight()
-		move.move(app.speedControl(),'forward')
+		move.move(moveBody.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getMiddle, getRight) < range_min and getLeft >range_min:
 		servo.turnLeft()
-		move.move(app.speedControl(), 'forward')
+		move.move(moveBody.speedControl(), 'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 	elif max(getLeft, getMiddle, getRight) < range_min:
 		servo.ahead()
-		move.move(app.speedControl(),'backward')
+		move.move(moveBody.speedControl(),'backward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 		# 0riv3r
@@ -157,12 +160,12 @@ def autoDect():
 			servo.turnLeft()
 		else:
 			servo.turnRight()
-		move.move(app.speedControl(),'forward')
+		move.move(moveBody.speedControl(),'forward')
 		time.sleep(sleepWhenMove/2)
 		move.motorStop()
 	else:
 		servo.turnMiddle()
-		move.move(app.speedControl(),'forward')
+		move.move(moveBody.speedControl(),'forward')
 		time.sleep(sleepWhenMove)
 		move.motorStop()
 
@@ -263,26 +266,26 @@ class SR_ctrl(threading.Thread):
 				voice_command = SR.run()
 				if voice_command == 'forward':
 					turn.turnMiddle()
-					move.move(speed_set, 'forward')
+					move.move(moveBody.speedControl(), 'forward')
 					time.sleep(1)
 					move.motorStop()
 
 				elif voice_command == 'backward':
 					turn.turnMiddle()
-					move.move(speed_set, 'backward')
+					move.move(moveBody.speedControl(), 'backward')
 					time.sleep(1)
 					move.motorStop()
 
 				elif voice_command == 'left':
 					servo.turnLeft()
-					move.move(speed_set, 'forward')
+					move.move(moveBody.speedControl(), 'forward')
 					time.sleep(1)
 					turn.turnMiddle()
 					move.motorStop()
 
 				elif voice_command == 'right':
 					servo.turnRight()
-					move.move(speed_set, 'forward')
+					move.move(moveBody.speedControl(), 'forward')
 					time.sleep(1)
 					turn.turnMiddle()
 					move.motorStop()
@@ -351,7 +354,7 @@ def run():
 	findline.setup()
 
 	# 0riv3r:
-	tcpCliSock.send(('Speed: ' + str(app.speedControl())).encode())
+	tcpCliSock.send(('Speed: ' + str(moveBody.speedControl())).encode())
 
 	while True: 
 		data = ''
@@ -361,15 +364,15 @@ def run():
 
 		elif 'forward' == data:
 			direction_command = 'forward'
-			move.move(app.speedControl(), direction_command)
+			move.move(moveBody.speedControl(), direction_command)
 		
 		elif 'backward' == data:
 			direction_command = 'backward'
-			move.move(app.speedControl(), direction_command)
+			move.move(moveBody.speedControl(), direction_command)
 
 		elif 'DS' in data:
 			direction_command = 'no'
-			move.move(app.speedControl(), direction_command)
+			move.move(moveBody.speedControl(), direction_command)
 
 		elif 'left' == data:
 			# turn_command = 'left'
@@ -382,12 +385,10 @@ def run():
 		# 0riv3r:
 		# -------
 		elif 'fast' == data:
-			speed_set = app.speedControl('add')
-			tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
+			tcpCliSock.send(('Speed: ' + str(moveBody.speedControl('add'))).encode())
 
 		elif 'slow' == data:
-			speed_set = app.speedControl('reduce')
-			tcpCliSock.send(('Speed: ' + str(speed_set)).encode())
+			tcpCliSock.send(('Speed: ' + str(moveBody.speedControl('reduce'))).encode())
 		# --------------------
 
 		elif 'TS' in data:
@@ -594,9 +595,7 @@ def run():
 
 		elif 'Speed' in data:
 			try:
-				set_speed=data.split()
-				speed_set = int(set_speed[1])
-				app.setSpeed(speed_set)
+				moveBody.setSpeed(int(data.split()[1]))
 			except:
 				pass
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env/python
-# File name     : BT.py
+# File name     : or_BT.py
 # Author        : 0riv3r
-# Desc          : Bluetooth, Audio
+# Desc          : Bluetooth, Audio functionality required by App
 #
 # BT Setup instractions can be found at the bottom
 

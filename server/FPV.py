@@ -28,7 +28,7 @@ import ultra
 import numpy as np
 
 # 0riv3r:
-import App
+import or_App as App
 app = App.App()
 
 

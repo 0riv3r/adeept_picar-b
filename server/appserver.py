@@ -14,7 +14,7 @@ import move
 import servo
 import switch
 
-import App
+import or_App as App
 
 app = App.App()
 
