@@ -79,30 +79,28 @@ class App:
 
             detect = True
             print(">  " + self.targetItem.value[0] + " Detected!  <")
-
-            # self.ItemDetectedSound(1)
-
+            self.ItemDetectedSound(1)
             """
-            get the last direction of the camera, 
+            get the last direction of the camera,
             which is where the item is found
             details on the camera direction decison in the else block below
             """
-            # direction = (self.cameraMoveCount-1) % 3
-
-            # if direction == 0:
-            #     self.bodyMovements.forward(sleepBeforeDrive, sleepDistance)
-
-            # elif direction == 1:
-            #     self.bodyMovements.left(sleepBeforeDrive, headAngle,
-            #                             wheelsTurnAngle, sleepDistance)
-
-            # elif direction == 2:
-            #     self.bodyMovements.right(sleepBeforeDrive, headAngle,
-            #                              wheelsTurnAngle, sleepDistance)
-
-            # self.ItemDetectedSound(0)
+            direction = (self.cameraMoveCount-1) % 3
+            self.bodyMovements.moveBodyDirection(direction, sleepBeforeDrive,
+                                                 sleepDistance, headAngle,
+                                                 wheelsTurnAngle)
+            self.ItemDetectedSound(0)
 
         else:  # *** The item is not detected ***
+
+            """
+            TODO:
+            follow a moving item with the head
+            decide if to follow the item by driving or only by head movements
+            follow a with the camera(head):
+            according to the placement of the objct dots
+            move the head-camera in order to keep the detected item in the middle
+            """
 
             """
             Camera movement
@@ -112,15 +110,8 @@ class App:
             """
             direction = self.cameraMoveCount % 3
             self.cameraMoveCount += 1
-
-            if direction == 0:
-                self.headMovements.ahead(stabilizingSleep)
-
-            elif direction == 1:
-                self.headMovements.left(stabilizingSleep, headAngle)
-
-            elif direction == 2:
-                self.headMovements.right(stabilizingSleep, headAngle)
+            self.headMovements.moveHeadDirection(direction, stabilizingSleep,
+                                                 headAngle)
 
         return detect
 

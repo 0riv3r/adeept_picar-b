@@ -7,6 +7,7 @@ import servo
 import ultra
 import move
 import time
+from enum import Enum
 
 
 # ---------------------------------------------------------
@@ -23,6 +24,12 @@ INIT_SPEED = 70
 RANGE_MIN = 0.2  # minimum distance from object
 
 # ---------------------------------------------------------
+
+
+class Direction(Enum):
+    AHEAD = 0
+    LEFT = 1
+    RIGHT = 2
 
 
 class MoveBody:
@@ -80,6 +87,19 @@ class MoveBody:
         servo.turnRight(wheelsTurnAngle)
         self._secureMove(sleepDistance)
 
+    def moveBodyDirection(self, direction, sleepBeforeDrive,
+                          sleepDistance, headAngle, wheelsTurnAngle):
+        if direction == Direction.AHEAD:
+            self.forward(sleepBeforeDrive, sleepDistance)
+
+        elif direction == Direction.LEFT:
+            self.left(sleepBeforeDrive, headAngle,
+                      wheelsTurnAngle, sleepDistance)
+
+        elif direction == Direction.RIGHT:
+            self.right(sleepBeforeDrive, headAngle,
+                       wheelsTurnAngle, sleepDistance)
+
 
 class MoveHead:
 
@@ -96,3 +116,14 @@ class MoveHead:
         servo.ahead()
         servo.lookright(headAngle)
         time.sleep(sleepTime)
+
+    def moveHeadDirection(self, direction, stabilizingSleep,
+                          headAngle):
+        if direction == Direction.AHEAD:
+            self.ahead(stabilizingSleep)
+
+        elif direction == Direction.LEFT:
+            self.left(stabilizingSleep, headAngle)
+
+        elif direction == Direction.RIGHT:
+            self.right(stabilizingSleep, headAngle)
