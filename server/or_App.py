@@ -140,7 +140,7 @@ class App:
         return vision.getBoundingPolygonPt1()
 
     def getBoundingPolygonPt2(self):
-        return vision.getBoundingPolygonPt2(self)
+        return vision.getBoundingPolygonPt2()
 
 # **********************    Functions   **********************
 

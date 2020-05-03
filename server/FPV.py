@@ -31,6 +31,16 @@ import numpy as np
 import or_App as App
 app = App.App()
 
+"""
+in the method: 'capture_thread(self,IPinver)'
+it sets: camera.resolution = (640, 480)
+at https://picamera.readthedocs.io/en/release-1.12/api_camera.html
+camera.resolution = (width, height)
+so I will use this size here as const to be used in my code
+"""
+RESOLUTION_W = 640
+RESOLUTION_H = 480
+
 
 pid = PID.PID()
 pid.SetKp(0.5)
@@ -274,12 +284,12 @@ class FPV:
 			if FindItemMode:
 				if(app.detectItem(frame_image) == True):
 					cv2.putText(frame_image,app.getTragetItem() + ' Detected',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
-					cv2.rectangle(frame_image,
-					(app.getBoundingPolygonPt1().getX + 50,
-					app.getBoundingPolygonPt1().getY + 50),
-					(app.getBoundingPolygonPt2().getX + 50,
-					app.getBoundingPolygonPt2().getY + 50),
-					(0,0,255),2)
+					# Draw the rectangle around the target object
+					pt1x = int(app.getBoundingPolygonPt1().getX() * RESOLUTION_W)
+					pt1y = int(app.getBoundingPolygonPt1().getY() * RESOLUTION_H)
+					pt2x = int(app.getBoundingPolygonPt2().getX() * RESOLUTION_W)
+					pt2y = int(app.getBoundingPolygonPt2().getY() * RESOLUTION_H)
+					cv2.rectangle(frame_image,(pt1x,pt1y),(pt2x,pt2y),(128,255,128),2)
 				else:
 					cv2.putText(frame_image,app.getTragetItem() + ' Detecting',(40,60), font, 0.5,(255,255,255),1,cv2.LINE_AA)
 					

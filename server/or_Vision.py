@@ -55,8 +55,8 @@ class Vision:
 
     def __init__(self):
         self.client = gcVision.ImageAnnotatorClient()
-        self.pt1 = 0.0
-        self.pt2 = 0.0
+        self.pt1 = Point(0, 0)
+        self.pt2 = Point(0, 0)
 
     def isDetectItem(self, frame_image, lstTargetProperties):
         detect = False
@@ -79,11 +79,12 @@ class Vision:
 
         for obj in objects:
             print("Item identified: " + obj.name)
-            # if obj.name == "Wheel":
+            if obj.name == "Wheel":
             # if obj.name in lstTargetProperties:
-            vertices = obj.bounding_poly.normalized_vertices
-            self.pt1 = Point(vertices[0].x, vertices[0].y)
-            self.pt2 = Point(vertices[2].x, vertices[2].y)
+                vertices = obj.bounding_poly.normalized_vertices
+                self.pt1 = Point(vertices[0].x, vertices[0].y)
+                self.pt2 = Point(vertices[2].x, vertices[2].y)
+                detect = True
 
         return detect
 
